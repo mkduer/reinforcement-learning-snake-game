@@ -1,3 +1,9 @@
+# feel free to add additional ignores at the bottom
+
+##########################
+# DEFAULT GITHUB IGNORES #
+##########################
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -102,3 +108,16 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+########
+# MISC #
+########
+*.pstat
+*.xlsx
+*.xls
+*.csv
+*.jpg
+*.png
+*.swp
+**/pip-selfcheck.json
+
