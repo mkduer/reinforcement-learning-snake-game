@@ -1,6 +1,8 @@
-## cs545_reinforcement_learning_project
+## cs545-reinforcement-learning-project
 ----
 
-Train an AI with reinforcement learning to play a game. Final Project for CS545 Machine Learning. 
+Final Project for CS545 Machine Learning. 
+
+Train an AI with reinforcement learning (specficially Q Learning with dynamic programming) to play the Snake game. 
 
 **Team Members**: Chris McPherson, Michelle Duer
