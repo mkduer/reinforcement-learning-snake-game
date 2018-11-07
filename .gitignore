@@ -90,6 +90,7 @@ celerybeat-schedule
 # Environments
 .env
 .venv
+.idea
 env/
 ENV/
 env.bak/
@@ -121,8 +122,5 @@ venv.bak/
 *.xlsx
 *.xls
 *.csv
-*.jpg
-*.png
 *.swp
-**/pip-selfcheck.json
 
