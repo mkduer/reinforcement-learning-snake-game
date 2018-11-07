@@ -19,8 +19,8 @@ from game import Game
 
 
 class App:
-    windowWidth = 800
-    windowHeight = 600
+    windowWidth = 792  # 44 * 18
+    windowHeight = 572  # 44 * 13
     player = 0
     mouse = 0
 
