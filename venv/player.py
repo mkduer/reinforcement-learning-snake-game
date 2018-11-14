@@ -5,8 +5,8 @@ class Player:
     direction = 0
     length = 3
 
-    updateCountMax = 2
-    updateCount = 0
+    update_count_max = 2
+    update_count = 0
 
     def __init__(self, length):
         self.length = length
@@ -20,8 +20,8 @@ class Player:
 
     def update(self):
 
-        self.updateCount = self.updateCount + 1
-        if self.updateCount > self.updateCountMax:
+        self.update_count = self.update_count + 1
+        if self.update_count > self.update_count_max:
 
             # update previous positions
             for i in range(self.length - 1, 0, -1):
@@ -38,18 +38,18 @@ class Player:
             if self.direction == 3:
                 self.y[0] = self.y[0] + self.step
 
-            self.updateCount = 0
+            self.update_count = 0
 
-    def moveRight(self):
+    def move_right(self):
         self.direction = 0
 
-    def moveLeft(self):
+    def move_left(self):
         self.direction = 1
 
-    def moveUp(self):
+    def move_up(self):
         self.direction = 2
 
-    def moveDown(self):
+    def move_down(self):
         self.direction = 3
 
     def draw(self, surface, image):
