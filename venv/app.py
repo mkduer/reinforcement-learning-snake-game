@@ -133,22 +133,23 @@ class App:
         (e.g. 1000) result in very slow frames
         """
         q = Q_Learning()
-        q.update()
 
         if self.on_init() == False:
             self._running = False
 
         while self._running:
             pygame.event.pump()
-            keys = pygame.key.get_pressed()
+            keys = pygame.key.get_pressed()  # For escape functionality
 
-            if keys[pygame.K_RIGHT]:
+            q.next_action()
+
+            if q.move_east():
                 self.snake.move_right()
-            elif keys[pygame.K_LEFT]:
+            elif q.move_west():
                 self.snake.move_left()
-            elif keys[pygame.K_UP]:
+            elif q.move_north():
                 self.snake.move_up()
-            elif keys[pygame.K_DOWN]:
+            elif q.move_south():
                 self.snake.move_down()
             elif keys[pygame.K_ESCAPE]:
                 self._running = False
