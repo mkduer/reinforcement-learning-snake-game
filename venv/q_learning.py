@@ -1,5 +1,3 @@
-
-
 class QLearning:
 
     def __init__(self):
@@ -31,8 +29,6 @@ class QLearning:
         return False
 
     def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)):
-        print(f'tail_loc: {tail_loc}')
-        print(f'mouse_loc: {mouse_loc}')
 
         # create hash for state representation
         hashkey = str(tail_loc) + str(mouse_loc)
@@ -45,7 +41,7 @@ class QLearning:
     def update(self, state: str):
         # TODO: add q algorithm here and return
 
-        # TODO: current_action is currently hardcoded, this needs to be updated and returned after the algorithm
+        # TODO: current_action is currently hardcoded to south, this needs to be updated and returned after the algorithm
         self.current_action = 'south'
         print(f'update')
 
