@@ -7,7 +7,7 @@ Modifications:
   - code cleaned to reduce unnecessary if statements, change variable names
   - separate classes into different files
   - add functionality for wall collisions
-  -	add count score, frame count, speed
+  -	add count score, frames count, speed
   - Q learning algorithm to turn it into a reinforcement learning project
 """
 
@@ -24,14 +24,10 @@ from q_learning import Q_Learning
 
 class App:
     tile = 44
-    row_tiles = 18
+    row_tiles = 15
     height_tiles = 13
-    window_width = tile * row_tiles  # 792
-    window_height = tile * height_tiles  # 572
-    snake = 0
-    mouse = 0
-    score = 0
-    frame_count = 0
+    window_width = tile * row_tiles
+    window_height = tile * height_tiles
 
     def __init__(self):
         self._running = True
@@ -41,6 +37,8 @@ class App:
         self.game = Game()
         self.snake = Snake(1)
         self.mouse = Mouse(5, 5)
+        self.score = 0
+        self.frames = 0
 
     def on_init(self):
         pygame.init()
@@ -57,11 +55,9 @@ class App:
             self._running = False
 
     def on_collision(self, i: int):
-        print("You lose! Collision: ")
+        print("\nCollision. You lose!")
         print("Score: " + str(self.score))
-        print("# of frames: " + str(self.frame_count))
-        print("x[0] (" + str(self.snake.x[0]) + "," + str(self.snake.y[0]) + ")")
-        print("x[" + str(i) + "] (" + str(self.snake.x[i]) + "," + str(self.snake.y[i]) + ")")
+        print("Total Frames: " + str(self.frames))
 
     def on_loop(self):
         self.snake.update()
@@ -121,9 +117,7 @@ class App:
             self.on_render()
 
             time.sleep(float(delay) / 1000.0)
-            self.frame_count += 1
-
-        pygame.quit()
+            self.frames += 1
 
     def ai_play(self, delay: int):
         """
@@ -151,16 +145,12 @@ class App:
                 self.snake.move_up()
             elif q.move_south():
                 self.snake.move_down()
-            elif keys[pygame.K_ESCAPE]:
-                self._running = False
 
             self.on_loop()
             self.on_render()
 
             time.sleep(float(delay) / 1000.0)
-            self.frame_count += 1
-
-        pygame.quit()
+            self.frames += 1
 
 
 def parse_args():
@@ -194,3 +184,5 @@ if __name__ == "__main__":
         snake_app.ai_play(delay)
     else:
         snake_app.human_play(delay)
+
+    pygame.quit()
