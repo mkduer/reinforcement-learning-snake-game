@@ -12,19 +12,22 @@ Modifications:
 """
 
 import pygame
-from mouse import Mouse
-from snake import Snake
-from game import Game
-from Q_Learning import Qenv
-
 import argparse
 import time
 from random import randint
 
+from mouse import Mouse
+from snake import Snake
+from game import Game
+from q_learning import Q_Learning
+
 
 class App:
-    window_width = 792  # 44 * 18
-    window_height = 572  # 44 * 13
+    tile = 44
+    row_tiles = 18
+    height_tiles = 13
+    window_width = tile * row_tiles  # 792
+    window_height = tile * height_tiles  # 572
     snake = 0
     mouse = 0
     score = 0
@@ -88,9 +91,10 @@ class App:
         self.mouse.draw(self._display, self._mouse)
         pygame.display.flip()
 
-    def on_execute(self, delay: int):
+    def human_play(self, delay: int):
         """
         Executes the game play, snake movements, and loops until the game ends.
+        Keys can be used to play the game.
         :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
         (e.g. 1000) result in very slow frames
         """
@@ -118,6 +122,43 @@ class App:
 
             time.sleep(float(delay) / 1000.0)
             self.frame_count += 1
+
+        pygame.quit()
+
+    def ai_play(self, delay: int):
+        """
+        Executes the game play, snake movements, and loops until the game ends.
+        Movements are implemented by the AI rather than by a human pressing keys.
+        :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
+        (e.g. 1000) result in very slow frames
+        """
+        q = Q_Learning()
+        q.update()
+
+        if self.on_init() == False:
+            self._running = False
+
+        while self._running:
+            pygame.event.pump()
+            keys = pygame.key.get_pressed()
+
+            if keys[pygame.K_RIGHT]:
+                self.snake.move_right()
+            elif keys[pygame.K_LEFT]:
+                self.snake.move_left()
+            elif keys[pygame.K_UP]:
+                self.snake.move_up()
+            elif keys[pygame.K_DOWN]:
+                self.snake.move_down()
+            elif keys[pygame.K_ESCAPE]:
+                self._running = False
+
+            self.on_loop()
+            self.on_render()
+
+            time.sleep(float(delay) / 1000.0)
+            self.frame_count += 1
+
         pygame.quit()
 
 
@@ -142,7 +183,13 @@ def parse_args():
 
 
 if __name__ == "__main__":
+    snake_app = App()
+
+    # Parse command line
     delay, ai_play = parse_args()
 
-    snake_app = App()
-    snake_app.on_execute(delay)
+    # Select game play
+    if ai_play == 'y':
+        snake_app.ai_play(delay)
+    else:
+        snake_app.human_play(delay)
