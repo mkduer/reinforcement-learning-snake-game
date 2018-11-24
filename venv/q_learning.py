@@ -1,13 +1,10 @@
 
 
-class Q_Learning:
+class QLearning:
 
     def __init__(self):
-
-        # State
-        self.actions = {'north': 0, 'east': 0, 'south': 0, 'west': 0}  # "clock-wise" directions
-        self.table = {}  # Q-table values
-        self.current_action = 'east'
+        self.table = {}  # Q-table
+        self.current_action = 'east'  # initial direction
 
         # Hyperparameters
         self.learning_rate = 1
@@ -33,20 +30,29 @@ class Q_Learning:
             return True
         return False
 
-    def next_action(self):
+    def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)):
+        print(f'tail_loc: {tail_loc}')
+        print(f'mouse_loc: {mouse_loc}')
+
+        # create hash for state representation
+        hashkey = str(tail_loc) + str(mouse_loc)
+
+        # if Q value does not exist, create it
+        if hashkey not in self.table:
+            self.table[hashkey] = {'north': 0, 'east': 0, 'south': 0, 'west': 0}
+        return self.table[hashkey]
+
+    def update(self, state: str):
+        # TODO: add q algorithm here and return
+
+        # TODO: current_action is currently hardcoded, this needs to be updated and returned after the algorithm
         self.current_action = 'south'
-
-
-    def update(self):
-        # TODO: add q algorithm here
         print(f'update')
 
 
-
-
 def main():
-    q = Q_Learning()
-    q.update()
+    # local, class testing
+    q = QLearning()
 
 
 if __name__ == "__main__":

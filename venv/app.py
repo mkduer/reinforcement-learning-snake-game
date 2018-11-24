@@ -19,7 +19,7 @@ from random import randint
 from mouse import Mouse
 from snake import Snake
 from game import Game
-from q_learning import Q_Learning
+from q_learning import QLearning
 
 
 class App:
@@ -132,7 +132,7 @@ class App:
         :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
         (e.g. 1000) result in very slow frames
         """
-        q = Q_Learning()
+        q = QLearning()
 
         if self.on_init() == False:
             self._running = False
@@ -141,7 +141,12 @@ class App:
             pygame.event.pump()
             keys = pygame.key.get_pressed()  # For escape functionality
 
-            q.next_action()
+            #tail_loc = self.snake.tail_coordinates()  # TODO: implement
+            #mouse_loc = self.mouse.coordinates() # TODO: implement
+            tail_loc = (1,2)
+            mouse_loc = (5,6)
+            state = q.define_state(tail_loc, mouse_loc)
+            q.update(state)
 
             if q.move_east():
                 self.snake.move_right()
