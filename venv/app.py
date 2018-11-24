@@ -23,20 +23,22 @@ from q_learning import QLearning
 
 
 class App:
-    tile = 44
-    row_tiles = 15
-    height_tiles = 13
-    window_width = tile * row_tiles
-    window_height = tile * height_tiles
 
     def __init__(self):
+        self.tile = 44
+        self.row_tiles = 3
+        self.height_tiles = 3
+        self.window_width = self.tile * self.row_tiles
+        self.window_height = self.tile * self.height_tiles
+
         self._running = True
         self._display = None
         self._snake = None
         self._mouse = None
+
         self.game = Game()
-        self.snake = Snake(1)
-        self.mouse = Mouse(5, 5)
+        self.snake = Snake(self.tile)
+        self.mouse = Mouse(0, 4, self.tile)  # TODO: Randomize these coordinates to fit within grid ranges
         self.score = 0
         self.frames = 0
 
@@ -64,9 +66,9 @@ class App:
 
         # if snake eats mouse
         for i in range(0, self.snake.length):
-            if self.game.is_collision(self.mouse.x, self.mouse.y, self.snake.x[i], self.snake.y[i], 44):
-                self.mouse.x = randint(2, 9) * 44
-                self.mouse.y = randint(2, 9) * 44
+            if self.game.is_collision(self.mouse.x, self.mouse.y, self.snake.x[i], self.snake.y[i], self.tile):
+                self.mouse.x = randint(2, 9) * self.tile
+                self.mouse.y = randint(2, 9) * self.tile
                 self.snake.length = self.snake.length + 1
                 self.score += 1
 
@@ -133,12 +135,13 @@ class App:
 
         while self._running:
             pygame.event.pump()
-            keys = pygame.key.get_pressed()  # For escape functionality
 
-            #tail_loc = self.snake.tail_coordinates()  # TODO: implement
-            #mouse_loc = self.mouse.coordinates() # TODO: implement
-            tail_loc = (1,2)
-            mouse_loc = (5,6)
+            head_loc = self.snake.head_coordinates()
+            mouse_loc = self.mouse.relative_coordinates(head_loc) # TODO: implement
+            """
+            tail_loc = self.snake.tail_coordinates(head_loc)  # TODO: implement
+            """
+            tail_loc = (0,0)
             state = q.define_state(tail_loc, mouse_loc)
             q.update(state)
 
