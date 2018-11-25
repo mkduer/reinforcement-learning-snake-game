@@ -1,8 +1,12 @@
+from random import randint
+
+
 class QLearning:
 
     def __init__(self):
         self.table = {}  # Q-table
-        self.current_action = 'east'
+        self.action = 'east'
+        self.all_actions = ['north', 'east', 'south', 'west']
 
         # Hyperparameters
         self.learning_rate = 1
@@ -12,7 +16,7 @@ class QLearning:
         """
         Makes snake move North
         """
-        if self.current_action == 'north':
+        if self.action == 'north':
             return True
         return False
 
@@ -20,7 +24,7 @@ class QLearning:
         """
         Makes snake move East
         """
-        if self.current_action == 'east':
+        if self.action == 'east':
             return True
         return False
 
@@ -28,7 +32,7 @@ class QLearning:
         """
         Makes snake move South
         """
-        if self.current_action == 'south':
+        if self.action == 'south':
             return True
         return False
 
@@ -36,7 +40,7 @@ class QLearning:
         """
         Makes snake move West
         """
-        if self.current_action == 'west':
+        if self.action == 'west':
             return True
         return False
 
@@ -52,14 +56,29 @@ class QLearning:
         # if Q value does not exist
         if hashkey not in self.table:
             self.table[hashkey] = {'north': 0, 'east': 0, 'south': 0, 'west': 0}
-        return self.table[hashkey]
+        return hashkey
+
+    def select_action(self, state: str):
+        """
+        Given the state details, choose the optimal action i.e. the maximal choice or, if there is
+        no obvious maximum, a randomized action
+        :param state: the state's relevant actions
+        :return: the selected action
+        """
+        actions = self.table[state]
+        self.action = self.all_actions[randint(0, 3)]
+
+        max_choice = actions[self.action]
+        for a in actions:
+            if actions[a] > max_choice:
+                self.action = a
+
+        return self.action
 
     def update(self, state: str):
-        # TODO: add q algorithm here and return
-
-        # TODO: current_action is currently hardcoded to south, this needs to be updated and returned after the algorithm
-        #print(f'update')
+        # TODO: function stub, add q algorithm here and return
         return 1
+
 
 
 def main():

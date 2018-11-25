@@ -152,8 +152,7 @@ class Snake:
         :return the relative coordinates
         """
         new_x, new_y = (0, 0)
-        print(f'head: {self.x[0]}, {self.y[0]}') # TODO: uncomment
-        print(f'tail: {self.x[-1]}, {self.y[-1]}') # TODO: uncomment
+
         if self.x[0] > self.tail[0]:
             new_x = self.x[0] - self.tail[0]
         if self.x[0] < self.tail[0]:
@@ -162,7 +161,5 @@ class Snake:
             new_y = self.y[0] - self.tail[1]
         if self.y[0] < self.tail[1]:
             new_y = self.tail[1] - y[0]
-
-        print(f'new x and y: {new_x}, {new_y}\n') # TODO uncomment
 
         return new_x, new_y
