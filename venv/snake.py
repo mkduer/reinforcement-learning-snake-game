@@ -1,7 +1,9 @@
+import constant
+
+
 class Snake:
 
-    def __init__(self, tile: int):
-        self.tile = tile
+    def __init__(self):
         self.length = 3
         self.direction = 0
 
@@ -12,19 +14,19 @@ class Snake:
         # Initial position changes based on initial direction
         if self.direction == 0:    # East
             for i in range(self.length, 0, -1):
-                self.x.append(i * self.tile)
+                self.x.append(i * constant.TILE)
                 self.y.append(0)
         elif self.direction == 1:  # West
             for i in range(0, self.length):
-                self.x.append(i * self.tile)
+                self.x.append(i * constant.TILE)
                 self.y.append(0)
         elif self.direction == 2:  # North
             for i in range(0, self.length):
-                self.y.append(i * self.tile)
+                self.y.append(i * constant.TILE)
                 self.x.append(0)
         else:                      # South
             for i in range(self.length, 0, -1):
-                self.y.append(i * self.tile)
+                self.y.append(i * constant.TILE)
                 self.x.append(0)
 
         self.tail = self.x[-1], self.y[-1]
@@ -42,13 +44,13 @@ class Snake:
 
         # update position of head of snake
         if self.direction == 0:
-            self.x[0] = self.x[0] + self.tile
+            self.x[0] = self.x[0] + constant.TILE
         if self.direction == 1:
-            self.x[0] = self.x[0] - self.tile
+            self.x[0] = self.x[0] - constant.TILE
         if self.direction == 2:
-            self.y[0] = self.y[0] - self.tile
+            self.y[0] = self.y[0] - constant.TILE
         if self.direction == 3:
-            self.y[0] = self.y[0] + self.tile
+            self.y[0] = self.y[0] + constant.TILE
         self.head = self.x[0], self.y[0]
 
     def eats_mouse(self, mouse_x: int, mouse_y: int) -> bool:
@@ -95,9 +97,9 @@ class Snake:
         Check if the snake collided with the wall
         :return: True if collision occurred, False otherwise
         """
-        if self.head[0] < x_base or self.head[0] + self.tile > x_max:
+        if self.head[0] < x_base or self.head[0] + constant.TILE > x_max:
             return True
-        if self.head[1] < y_base or self.head[1] + self.tile > y_max:
+        if self.head[1] < y_base or self.head[1] + constant.TILE > y_max:
             return True
         return False
 
@@ -160,6 +162,6 @@ class Snake:
         if self.y[0] > self.tail[1]:
             new_y = self.y[0] - self.tail[1]
         if self.y[0] < self.tail[1]:
-            new_y = self.tail[1] - y[0]
+            new_y = self.tail[1] - self.y[0]
 
         return new_x, new_y

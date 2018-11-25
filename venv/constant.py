@@ -1,0 +1,7 @@
+TILE = 44
+WIDTH = 6
+HEIGHT = 10
+
+MOUSE = 1
+WALL = -10
+SNAKE = -10

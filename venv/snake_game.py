@@ -5,16 +5,15 @@ import time
 from mouse import Mouse
 from snake import Snake
 from q_learning import QLearning
+import constant
 
 
 class Game:
 
     def __init__(self):
-        self.width_tiles = 6 #TODO, the hight and width might be a bit too small
-        self.height_tiles = 10
-        self.tile = 44
-        self.window_width = self.width_tiles * self.tile
-        self.window_height = self.height_tiles * self.tile
+
+        self.window_width = constant.WIDTH * constant.TILE
+        self.window_height = constant.HEIGHT * constant.TILE
         self.score = 0
         self.frames = 0
 
@@ -23,8 +22,8 @@ class Game:
         self._snake = None
         self._mouse = None
 
-        self.snake = Snake(self.tile)
-        self.mouse = Mouse(self.width_tiles, self.height_tiles, self.tile, self.snake.body_position())
+        self.snake = Snake()
+        self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
         self.q = QLearning()
 
 
@@ -48,7 +47,7 @@ class Game:
         print("Total Frames: " + str(self.frames))  # TODO: needed?
         exit(0)  # TODO: this can be altered to a reset game with a reset function
 
-    def snake_status(self):
+    def snake_status(self, ai_play: bool):
         """
         Check whether the snake has eaten the mouse or encountered a collision
         """
@@ -58,13 +57,19 @@ class Game:
         if self.snake.eats_mouse(self.mouse.x, self.mouse.y):
             self.mouse.x, self.mouse.y = self.mouse.generate_mouse(self.snake.body_position())
             self.score += 1
+            if ai_play:
+                self.q.update_reward('mouse')
 
         # if snake collides with itself
         if self.snake.body_collision():
+            if ai_play:
+                self.q.update_reward('snake')
             self.on_collision('itself')
 
         # if snake collides with walls
         if self.snake.wall_collision(0, self.window_width, 0, self.window_height):
+            if ai_play:
+                self.q.update_reward('wall')
             self.on_collision('the wall')
 
     def render(self):
@@ -83,7 +88,6 @@ class Game:
         :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
         (e.g. 1000) result in very slow frames
         """
-
         while self._running:
             pygame.event.pump()
             keys = pygame.key.get_pressed()
@@ -99,7 +103,7 @@ class Game:
             elif keys[pygame.K_ESCAPE]:
                 self._running = False
 
-            self.snake_status()
+            self.snake_status(ai_play=False)
             self.render()
 
             time.sleep(float(delay) / 1000.0)
@@ -120,20 +124,26 @@ class Game:
             mouse_loc = self.mouse.relative_coordinates(snake_head)
             tail_loc = self.snake.tail_coordinates()
             state = self.q.define_state(tail_loc, mouse_loc)
-
             action = self.q.select_action(state)
-            #self.q.update(state)  # TODO implement
+            print(f'action: {action}')  # TODO testing print, useful when snake hits walls
 
-            if self.q.move_east():
+            if action == 'east':
                 self.snake.move_east()
-            elif self.q.move_west():
+            elif action == 'west':
                 self.snake.move_west()
-            elif self.q.move_north():
+            elif action == 'north':
                 self.snake.move_north()
-            elif self.q.move_south():
+            else:        # south
                 self.snake.move_south()
 
-            self.snake_status()
+            snake_head = self.snake.head_coordinates()
+            mouse_loc = self.mouse.relative_coordinates(snake_head)
+            tail_loc = self.snake.tail_coordinates()
+            next_state = self.q.define_state(tail_loc, mouse_loc)
+
+            self.snake_status(True)
+            #self.q.update(state, next_state, action)  # TODO implement
+            self.q.reset_reward()
             self.render()
 
             time.sleep(float(delay) / 1000.0)

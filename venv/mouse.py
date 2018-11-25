@@ -1,10 +1,10 @@
 from random import randint
+import constant
 
 
 class Mouse:
 
-    def __init__(self, width, height, tile: int, snake_body: ([int], [int])):
-        self.tile = tile
+    def __init__(self, width, height, snake_body: ([int], [int])):
         self.grid_width = width
         self.grid_height = height
         self.x, self.y = self.generate_mouse(snake_body)
@@ -27,8 +27,8 @@ class Mouse:
 
         length = len(snake_body[0])
         while not unique:
-            x = randint(0, self.grid_width - 1) * self.tile
-            y = randint(0, self.grid_height - 1) * self.tile
+            x = randint(0, self.grid_width - 1) * constant.TILE
+            y = randint(0, self.grid_height - 1) * constant.TILE
             for i in range(0, length):
                 if x == snake_body[0][i] and y == snake_body[1][i]:
                     break
