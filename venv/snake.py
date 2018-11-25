@@ -2,47 +2,54 @@ class Snake:
 
     def __init__(self, tile: int):
         self.tile = tile
-        self.update_count_max = 2
-        self.update_count = 0
-
         self.length = 3
         self.direction = 0
 
+        # Initialize coordinates
         self.x = []
         self.y = []
 
-        # initial positions
-        for i in range(self.length, 0, -1):
-            self.x.append(i * self.tile)
-            self.y.append(0)
-        print(f'init x: {self.x}')
-        print(f'init y: {self.y}')
+        # Initial position changes based on initial direction
+        if self.direction == 0:    # East
+            for i in range(self.length, 0, -1):
+                self.x.append(i * self.tile)
+                self.y.append(0)
+        elif self.direction == 1:  # West
+            for i in range(0, self.length):
+                self.x.append(i * self.tile)
+                self.y.append(0)
+        elif self.direction == 2:  # North
+            for i in range(0, self.length):
+                self.y.append(i * self.tile)
+                self.x.append(0)
+        else:                      # South
+            for i in range(self.length, 0, -1):
+                self.y.append(i * self.tile)
+                self.x.append(0)
 
         self.tail = self.x[-1], self.y[-1]
         self.head = self.x[0], self.y[0]
 
     def update(self):
-        self.update_count = self.update_count + 1
-        if self.update_count > self.update_count_max:
+        """
+        Updates snake body based on new movements
+        """
+        # update body position
+        for i in range(self.length - 1, 0, -1):
+            self.x[i] = self.x[i - 1]
+            self.y[i] = self.y[i - 1]
+        self.tail = self.x[-1], self.y[-1]
 
-            # update body position
-            for i in range(self.length - 1, 0, -1):
-                self.x[i] = self.x[i - 1]
-                self.y[i] = self.y[i - 1]
-            self.tail = self.x[-1], self.y[-1]
-
-            # update position of head of snake
-            if self.direction == 0:
-                self.x[0] = self.x[0] + self.tile
-            if self.direction == 1:
-                self.x[0] = self.x[0] - self.tile
-            if self.direction == 2:
-                self.y[0] = self.y[0] - self.tile
-            if self.direction == 3:
-                self.y[0] = self.y[0] + self.tile
-            self.head = self.x[0], self.y[0]
-
-            self.update_count = 0
+        # update position of head of snake
+        if self.direction == 0:
+            self.x[0] = self.x[0] + self.tile
+        if self.direction == 1:
+            self.x[0] = self.x[0] - self.tile
+        if self.direction == 2:
+            self.y[0] = self.y[0] - self.tile
+        if self.direction == 3:
+            self.y[0] = self.y[0] + self.tile
+        self.head = self.x[0], self.y[0]
 
     def eats_mouse(self, mouse_x: int, mouse_y: int) -> bool:
         """
@@ -92,19 +99,30 @@ class Snake:
             return True
         if self.head[1] < y_base or self.head[1] + self.tile > y_max:
             return True
-
         return False
 
-    def move_right(self):
+    def move_east(self):
+        """
+        Snake moves East
+        """
         self.direction = 0
 
-    def move_left(self):
+    def move_west(self):
+        """
+        Snake moves West
+        """
         self.direction = 1
 
-    def move_up(self):
+    def move_north(self):
+        """
+        Snake moves North
+        """
         self.direction = 2
 
-    def move_down(self):
+    def move_south(self):
+        """
+        Snake moves South
+        """
         self.direction = 3
 
     def draw(self, surface, image):
@@ -123,14 +141,19 @@ class Snake:
         return self.x, self.y
 
     def head_coordinates(self):
+        """
+        :return: returns the snake's head coordinates
+        """
         return self.x[0], self.y[0]
 
     def tail_coordinates(self):
-        new_x, new_y = (0, 0)
         """
+        Calculates the relative position of the tail relative to the snake's origin head
+        :return the relative coordinates
+        """
+        new_x, new_y = (0, 0)
         print(f'head: {self.x[0]}, {self.y[0]}') # TODO: uncomment
         print(f'tail: {self.x[-1]}, {self.y[-1]}') # TODO: uncomment
-        """
         if self.x[0] > self.tail[0]:
             new_x = self.x[0] - self.tail[0]
         if self.x[0] < self.tail[0]:
@@ -140,6 +163,6 @@ class Snake:
         if self.y[0] < self.tail[1]:
             new_y = self.tail[1] - y[0]
 
-        #print(f'new x and y: {new_x}, {new_y}\n') # TODO uncomment
+        print(f'new x and y: {new_x}, {new_y}\n') # TODO uncomment
 
         return new_x, new_y
