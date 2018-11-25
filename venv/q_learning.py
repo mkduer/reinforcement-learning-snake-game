@@ -42,7 +42,7 @@ class QLearning:
         # TODO: add q algorithm here and return
 
         # TODO: current_action is currently hardcoded to south, this needs to be updated and returned after the algorithm
-        self.current_action = 'south'
+        self.current_action = 'east'
         #print(f'update')
 
 
