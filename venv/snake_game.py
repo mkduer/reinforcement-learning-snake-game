@@ -10,7 +10,7 @@ from q_learning import QLearning
 class Game:
 
     def __init__(self):
-        self.width_tiles = 6
+        self.width_tiles = 6 #TODO, the hight and width might be a bit too small
         self.height_tiles = 10
         self.tile = 44
         self.window_width = self.width_tiles * self.tile
