@@ -33,7 +33,7 @@ class QLearning:
         # create hash for state representation
         hashkey = str(tail_loc) + str(mouse_loc)
 
-        # if Q value does not exist, create it
+        # if Q value does not exist
         if hashkey not in self.table:
             self.table[hashkey] = {'north': 0, 'east': 0, 'south': 0, 'west': 0}
         return self.table[hashkey]
@@ -43,7 +43,7 @@ class QLearning:
 
         # TODO: current_action is currently hardcoded to south, this needs to be updated and returned after the algorithm
         self.current_action = 'south'
-        print(f'update')
+        #print(f'update')
 
 
 def main():
