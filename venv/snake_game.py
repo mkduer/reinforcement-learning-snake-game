@@ -44,7 +44,15 @@ class Game:
         print('\nSnake collided with ' + collision_type + '. You lose!')
         print("Score: " + str(self.score))
         print("Total Frames: " + str(self.frames))  # TODO: needed?
-        exit(0)  # TODO: this can be altered to a reset game with a reset function
+        exit(0)  # TODO: this can be altered to a reset game with a reset function, Chris will work on this
+
+        # TODO: suggested implementation that works, can be improved upon
+        """
+        print(f'NEW GAME:')
+        snake_game = Game()
+        snake_game.pygame_init()
+        snake_game.ai_play(delay)
+        """
 
     def snake_status(self, ai_play: bool):
         """
@@ -126,6 +134,7 @@ class Game:
             action = self.q.select_action(state)
             print(f'action: {action}')  # TODO testing print, useful when snake hits walls
 
+
             if action == 'east':
                 self.snake.move_east()
             elif action == 'west':
@@ -141,7 +150,7 @@ class Game:
             next_state = self.q.define_state(tail_loc, mouse_loc)
 
             self.snake_status(True)
-            #self.q.update(state, next_state, action)  # TODO implement
+            self.q.update(state, next_state, action)
             self.q.reset_reward()
             self.render()
 

@@ -14,38 +14,41 @@ class QLearning:
         self.reward = 0
 
 
-    def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)):
+    def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)) -> {str: int}:
         """
         Creates state based on the snake's origin head relative to its tail and relative to the mouse
         :param tail_loc: tail coordinates
         :param mouse_loc: mouse coordinates
-        :return: the hashed state
+        :return: the state key
         """
-        hashkey = str(tail_loc) + str(mouse_loc)
+        key = str(tail_loc) + str(mouse_loc)
 
         # if Q value does not exist
-        if hashkey not in self.table:
-            self.table[hashkey] = {'north': 0, 'east': 0, 'south': 0, 'west': 0}
-        return hashkey
+        if key not in self.table:
+            self.table[key] = {'north': 0, 'east': 0, 'south': 0, 'west': 0}
+        return self.table[key]
 
-    def select_action(self, state: str):
+    def select_action(self, state: {str: int}):
         """
         Given the state details, choose the optimal action i.e. the maximal choice or, if there is
         no obvious maximum, a randomized action
-        :param state: the state's relevant actions
+        :param state: the state and actions
         :return: the selected action
         """
-        actions = self.table[state]
         action = self.all_actions[randint(0, 3)]
-        max_choice = actions[action]
+        max_choice = state[action]
 
-        for a in actions:
-            if actions[a] > max_choice:
+        for a in state:
+            if state[a] > max_choice:
                 action = a
 
         return action
 
     def update_reward(self, reward_type: str):
+        """
+        Update reward depending on reward/penalty values
+        :param reward_type: a string representing what the snake encountered
+        """
         if reward_type == 'mouse':
             self.reward + constant.MOUSE
         elif reward_type == 'wall':
@@ -54,12 +57,21 @@ class QLearning:
             self.reward + constant.SNAKE
 
     def reset_reward(self):
+        """
+        Resets the reward
+        """
         self.reward = 0
 
-    def update(self, state: str, next_state: str, reward: int, action: str):
-        # TODO: function stub, add q algorithm here and return
-        return 1
-
+    def update(self, q_current: {str: int}, q_next: {str: int}, action: str):
+        """
+        Implements the Q learning algorithm with temporal difference and set hyperparameters
+        :param q_current: the current state
+        :param q_next: the next state
+        :param action: the action that was chosen
+        """
+        prediction = self.select_action(q_next)
+        max_action = q_next[prediction]
+        q_current[action] = q_current[action] + self.learning_rate * (self.reward + self.discount_factor * (max_action - q_current[action]))
 
 
 def main():
