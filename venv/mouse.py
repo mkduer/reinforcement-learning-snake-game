@@ -34,8 +34,6 @@ class Mouse:
                     break
             unique = True
 
-        print(f'\nnew mouse coordinates: {x}, {y}')
-        print(f'snake body x: {snake_body[0]}\nsnake body y: {snake_body[1]}')
         return x, y
 
     def relative_coordinates(self, snake_head: (int, int)) -> (int, int):

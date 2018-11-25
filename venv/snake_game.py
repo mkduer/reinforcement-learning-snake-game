@@ -10,11 +10,13 @@ from q_learning import QLearning
 class Game:
 
     def __init__(self):
-        self.width_tiles = 10
+        self.width_tiles = 6
         self.height_tiles = 10
         self.tile = 44
         self.window_width = self.width_tiles * self.tile
         self.window_height = self.height_tiles * self.tile
+        self.score = 0
+        self.frames = 0
 
         self._running = True
         self._display = None
@@ -23,8 +25,8 @@ class Game:
 
         self.snake = Snake(self.tile)
         self.mouse = Mouse(self.width_tiles, self.height_tiles, self.tile, self.snake.body_position())
-        self.score = 0
-        self.frames = 0
+        self.q = QLearning()
+
 
     def pygame_init(self):
         """
@@ -110,7 +112,6 @@ class Game:
         :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
         (e.g. 1000) result in very slow frames
         """
-        q = QLearning()
 
         while self._running:
             pygame.event.pump()
@@ -118,16 +119,18 @@ class Game:
             snake_head = self.snake.head_coordinates()
             mouse_loc = self.mouse.relative_coordinates(snake_head)
             tail_loc = self.snake.tail_coordinates()
-            state = q.define_state(tail_loc, mouse_loc)
-            q.update(state)  # TODO implement
+            state = self.q.define_state(tail_loc, mouse_loc)
 
-            if q.move_east():
+            action = self.q.select_action(state)
+            #self.q.update(state)  # TODO implement
+
+            if self.q.move_east():
                 self.snake.move_east()
-            elif q.move_west():
+            elif self.q.move_west():
                 self.snake.move_west()
-            elif q.move_north():
+            elif self.q.move_north():
                 self.snake.move_north()
-            elif q.move_south():
+            elif self.q.move_south():
                 self.snake.move_south()
 
             self.snake_status()
