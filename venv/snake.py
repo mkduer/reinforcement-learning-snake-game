@@ -5,16 +5,18 @@ class Snake:
         self.update_count_max = 2
         self.update_count = 0
 
-        self.length = 6
-        self.direction = 3
+        self.length = 3
+        self.direction = 0
 
         self.x = []
         self.y = []
 
         # initial positions
-        for i in range(0, self.length):
+        for i in range(self.length, 0, -1):
             self.x.append(i * self.tile)
             self.y.append(0)
+        print(f'init x: {self.x}')
+        print(f'init y: {self.y}')
 
         self.tail = self.x[-1], self.y[-1]
         self.head = self.x[0], self.y[0]
@@ -23,10 +25,11 @@ class Snake:
         self.update_count = self.update_count + 1
         if self.update_count > self.update_count_max:
 
-            # update previous positions
+            # update body position
             for i in range(self.length - 1, 0, -1):
                 self.x[i] = self.x[i - 1]
                 self.y[i] = self.y[i - 1]
+            self.tail = self.x[-1], self.y[-1]
 
             # update position of head of snake
             if self.direction == 0:
@@ -37,37 +40,59 @@ class Snake:
                 self.y[0] = self.y[0] - self.tile
             if self.direction == 3:
                 self.y[0] = self.y[0] + self.tile
-
-            self.tail = self.x[self.length - 1], self.y[self.length - 1]
             self.head = self.x[0], self.y[0]
+
             self.update_count = 0
 
-    def eats_mouse(self, mouse_x: int, mouse_y: int):
+    def eats_mouse(self, mouse_x: int, mouse_y: int) -> bool:
+        """
+        If the snake eats the mouse, update its body positions
+        :param mouse_x: mouse's x coordinate
+        :param mouse_y: mouse's y coordinate
+        :return: True if mouse was eaten, False otherwise
+        """
         for i in range(0, self.length):
             if mouse_x == self.x[i] and mouse_y == self.y[i]:
 
+                # update tail
                 self.x.append(self.x[-1])
                 self.y.append(self.y[-1])
+                self.tail = self.x[-1], self.y[-1]
                 self.length += 1
 
-                for j in range(self.length - 2, 0, -1):
+                # update the rest of body
+                for j in range(self.length - 2, 1, -1):
                     self.x[j] = self.x[j - 1]
                     self.y[j] = self.y[j - 1]
+
+                # update head
+                self.x[0] = mouse_x
+                self.y[0] = mouse_y
+                self.head = self.x[0], self.y[0]
+
                 return True
         return False
 
     def body_collision(self) -> bool:
-        for i in range(2, self.length):
+        """
+        Check if the snake has collided with itself
+        :return: True if collision occurred, False otherwise
+        """
+        for i in range(1, self.length):
             if self.head[0] == self.x[i] and self.head[1] == self.y[i]:
                 return True
         return False
 
     def wall_collision(self, x_base, x_max, y_base, y_max):
+        """
+        Check if the snake collided with the wall
+        :return: True if collision occurred, False otherwise
+        """
         if self.head[0] < x_base or self.head[0] + self.tile > x_max:
             return True
-
         if self.head[1] < y_base or self.head[1] + self.tile > y_max:
             return True
+
         return False
 
     def move_right(self):
@@ -83,8 +108,19 @@ class Snake:
         self.direction = 3
 
     def draw(self, surface, image):
+        """
+        Draw the snake on the board
+        :param surface: the pygame board
+        :param image: the pixelated snake body image
+        """
         for i in range(0, self.length):
             surface.blit(image, (self.x[i], self.y[i]))
+
+    def body_position(self) -> ([int], [int]):
+        """
+        :return: returns snake body's coordinates
+        """
+        return self.x, self.y
 
     def head_coordinates(self):
         return self.x[0], self.y[0]

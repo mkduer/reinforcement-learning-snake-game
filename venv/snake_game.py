@@ -1,15 +1,4 @@
-"""
-Source of original game is a tutorial for building snake with pygame:
-  https://pythonspot.com/snake-with-pygame/
 
-Modifications:
-  - different visual components
-  - code cleaned to reduce unnecessary if statements, change variable names
-  - separate classes into different files
-  - add functionality for wall collisions
-  -	add count score, frames count, speed
-  - Q learning algorithm to turn it into a reinforcement learning project
-"""
 
 import pygame
 import argparse
@@ -24,11 +13,11 @@ from q_learning import QLearning
 class Game:
 
     def __init__(self):
-        self.tile = 44
-        self.row_tiles = 10
+        self.width_tiles = 15
         self.height_tiles = 10
-        self.window_width = self.tile * self.row_tiles
-        self.window_height = self.tile * self.height_tiles
+        self.tile = 44
+        self.window_width = self.width_tiles * self.tile
+        self.window_height = self.height_tiles * self.tile
 
         self._running = True
         self._display = None
@@ -36,49 +25,54 @@ class Game:
         self._mouse = None
 
         self.snake = Snake(self.tile)
-        self.mouse = Mouse(0, 5, self.tile)  # TODO: Randomize these coordinates to fit within grid ranges
+        self.mouse = Mouse(self.width_tiles, self.height_tiles, self.tile, self.snake.body_position())  # TODO: Randomize these coordinates to fit within grid ranges
         self.score = 0
         self.frames = 0
 
     def on_init(self):
+        """
+        Initialize pygame along with display and image settings
+        """
         pygame.init()
         self._display = pygame.display.set_mode((self.window_width, self.window_height), pygame.HWSURFACE)
-
         pygame.display.set_caption('SNAKE')
         self._running = True
         self._snake = pygame.image.load("img/snake_body_mini.png").convert()
         # source for mouse: http://pixelartmaker.com/art/3d272b1bf180b60.png
         self._mouse = pygame.image.load("img/mouse_mini.png").convert()
 
-    def on_event(self, event):
-        if event.type == pygame.QUIT:
-            self._running = False
-
-    def on_collision(self):
-        print("\nCollision. You lose!")
+    def on_collision(self, collision_type: str):
+        """
+        Print game results and exit the game
+        """
+        print('\nSnake collided with ' + collision_type + '. You lose!')
         print("Score: " + str(self.score))
-        print("Total Frames: " + str(self.frames))
-        exit(0)
+        print("Total Frames: " + str(self.frames))  # TODO: needed?
+        exit(0)  # TODO: this can be altered to a reset game to repeat game
 
-    def on_loop(self):
+    def snake_status(self):
+        """
+        Check whether the snake has eaten the mouse or encountered a collision
+        """
         self.snake.update()
 
         # if snake eats mouse
         if self.snake.eats_mouse(self.mouse.x, self.mouse.y):
-            self.mouse.x = randint(2, 9) * self.tile
-            self.mouse.y = randint(2, 9) * self.tile
+            self.mouse.x, self.mouse.y = self.mouse.generate_mouse(self.snake.body_position())
             self.score += 1
 
         # if snake collides with itself
         if self.snake.body_collision():
-            self.on_collision()
+            self.on_collision('itself')
 
         # if snake collides with walls
         if self.snake.wall_collision(0, self.window_width, 0, self.window_height):
-            self.on_collision()
+            self.on_collision('the wall')
 
-
-    def on_render(self):
+    def render(self):
+        """
+        Render the visual components of the game
+        """
         self._display.fill((0, 0, 0))
         self.snake.draw(self._display, self._snake)
         self.mouse.draw(self._display, self._mouse)
@@ -110,8 +104,8 @@ class Game:
             elif keys[pygame.K_ESCAPE]:
                 self._running = False
 
-            self.on_loop()
-            self.on_render()
+            self.snake_status()
+            self.render()
 
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
@@ -174,12 +168,11 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    snake_app = Game()
-
-    # Parse command line
+    # parse command line
     delay, ai_play = parse_args()
 
-    # Select game play
+    # initialize and select game play
+    snake_app = Game()
     if ai_play == 'y':
         snake_app.ai_play(delay)
     else:
