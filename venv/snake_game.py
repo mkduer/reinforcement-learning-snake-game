@@ -18,16 +18,15 @@ from random import randint
 
 from mouse import Mouse
 from snake import Snake
-from game import Game
 from q_learning import QLearning
 
 
-class App:
+class Game:
 
     def __init__(self):
         self.tile = 44
-        self.row_tiles = 3
-        self.height_tiles = 3
+        self.row_tiles = 10
+        self.height_tiles = 10
         self.window_width = self.tile * self.row_tiles
         self.window_height = self.tile * self.height_tiles
 
@@ -36,9 +35,8 @@ class App:
         self._snake = None
         self._mouse = None
 
-        self.game = Game()
         self.snake = Snake(self.tile)
-        self.mouse = Mouse(0, 4, self.tile)  # TODO: Randomize these coordinates to fit within grid ranges
+        self.mouse = Mouse(0, 5, self.tile)  # TODO: Randomize these coordinates to fit within grid ranges
         self.score = 0
         self.frames = 0
 
@@ -56,32 +54,29 @@ class App:
         if event.type == pygame.QUIT:
             self._running = False
 
-    def on_collision(self, i: int):
+    def on_collision(self):
         print("\nCollision. You lose!")
         print("Score: " + str(self.score))
         print("Total Frames: " + str(self.frames))
+        exit(0)
 
     def on_loop(self):
         self.snake.update()
 
         # if snake eats mouse
-        for i in range(0, self.snake.length):
-            if self.game.is_collision(self.mouse.x, self.mouse.y, self.snake.x[i], self.snake.y[i], self.tile):
-                self.mouse.x = randint(2, 9) * self.tile
-                self.mouse.y = randint(2, 9) * self.tile
-                self.snake.length = self.snake.length + 1
-                self.score += 1
+        if self.snake.eats_mouse(self.mouse.x, self.mouse.y):
+            self.mouse.x = randint(2, 9) * self.tile
+            self.mouse.y = randint(2, 9) * self.tile
+            self.score += 1
 
         # if snake collides with itself
-        for i in range(2, self.snake.length):
-            if self.game.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i], 40):
-                self.on_collision(i) 
-                exit(0)
+        if self.snake.body_collision():
+            self.on_collision()
 
         # if snake collides with walls
-        if self.game.is_wall_collision(0, self.window_width, 0, self.window_height, self.snake.x[0], self.snake.y[0]):
-            self.on_collision(i)
-            exit(0)
+        if self.snake.wall_collision(0, self.window_width, 0, self.window_height):
+            self.on_collision()
+
 
     def on_render(self):
         self._display.fill((0, 0, 0))
@@ -136,14 +131,11 @@ class App:
         while self._running:
             pygame.event.pump()
 
-            head_loc = self.snake.head_coordinates()
-            mouse_loc = self.mouse.relative_coordinates(head_loc) # TODO: implement
-            """
-            tail_loc = self.snake.tail_coordinates(head_loc)  # TODO: implement
-            """
-            tail_loc = (0,0)
+            snake_head = self.snake.head_coordinates()
+            mouse_loc = self.mouse.relative_coordinates(snake_head)
+            tail_loc = self.snake.tail_coordinates()  # TODO: implement
             state = q.define_state(tail_loc, mouse_loc)
-            q.update(state)
+            q.update(state)  # TODO implement
 
             if q.move_east():
                 self.snake.move_right()
@@ -182,7 +174,7 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    snake_app = App()
+    snake_app = Game()
 
     # Parse command line
     delay, ai_play = parse_args()
