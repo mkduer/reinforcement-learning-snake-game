@@ -1,48 +1,18 @@
 from random import randint
+import constant
 
 
 class QLearning:
 
     def __init__(self):
         self.table = {}  # Q-table
-        self.action = 'east'
         self.all_actions = ['north', 'east', 'south', 'west']
 
         # Hyperparameters
         self.learning_rate = 1
         self.discount_factor = 0.9
+        self.reward = 0
 
-    def move_north(self):
-        """
-        Makes snake move North
-        """
-        if self.action == 'north':
-            return True
-        return False
-
-    def move_east(self):
-        """
-        Makes snake move East
-        """
-        if self.action == 'east':
-            return True
-        return False
-
-    def move_south(self):
-        """
-        Makes snake move South
-        """
-        if self.action == 'south':
-            return True
-        return False
-
-    def move_west(self):
-        """
-        Makes snake move West
-        """
-        if self.action == 'west':
-            return True
-        return False
 
     def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)):
         """
@@ -66,16 +36,27 @@ class QLearning:
         :return: the selected action
         """
         actions = self.table[state]
-        self.action = self.all_actions[randint(0, 3)]
+        action = self.all_actions[randint(0, 3)]
+        max_choice = actions[action]
 
-        max_choice = actions[self.action]
         for a in actions:
             if actions[a] > max_choice:
-                self.action = a
+                action = a
 
-        return self.action
+        return action
 
-    def update(self, state: str):
+    def update_reward(self, reward_type: str):
+        if reward_type == 'mouse':
+            self.reward + constant.MOUSE
+        elif reward_type == 'wall':
+            self.reward + constant.WALL
+        elif reward_type == 'snake':
+            self.reward + constant.SNAKE
+
+    def reset_reward(self):
+        self.reward = 0
+
+    def update(self, state: str, next_state: str, reward: int, action: str):
         # TODO: function stub, add q algorithm here and return
         return 1
 
