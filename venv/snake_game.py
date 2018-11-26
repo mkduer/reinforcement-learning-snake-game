@@ -25,7 +25,12 @@ class Game:
         self.snake = Snake()
         self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
         self.q = QLearning()
+
         self.episode = 1
+
+        self.game_exit = False
+        self.collision_state = False
+        self.iteration_count = 0
 
     def pygame_init(self):
         """
@@ -44,9 +49,15 @@ class Game:
         """
         print('\nSnake collided with ' + collision_type + '. You lose!')
         print("Score: " + str(self.score))
-        print("Total Frames: " + str(self.frames))  # TODO: needed?
+
         self._running = False
         self.check_episode()
+#merge bits together
+       	self.iteration_count += 1
+       	if (self.iteration_count >= iterations):
+       		self.game_exit = True
+        #exit(0)  # TODO: this can be altered to a reset game with a reset function
+        
 
     def snake_status(self, ai_play: bool):
         """
@@ -82,7 +93,7 @@ class Game:
         self.mouse.draw(self._display, self._mouse)
         pygame.display.flip()
 
-    def human_play(self, delay: int):
+    def human_play(self, delay: int, iterations: int):
         """
         Executes the game play, snake movements, and loops until the game ends.
         Keys can be used to play the game.
@@ -106,7 +117,7 @@ class Game:
 
             self.snake_status(ai_play=False)
             self.render()
-
+			
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
 
@@ -172,32 +183,34 @@ def parse_args():
         return: values associated with flag(s)"""
 
     # define arguments and types
-    parser = argparse.ArgumentParser(description='Snake Game: available for manual play, but created for training an AI'
-                                                 'with reinforcement learning')
-    parser.add_argument('-d', metavar='delay', type=int, nargs='?',
-                        help='delays speed of snake (e.g. lower values result in faster snake, '
-                             'higher values result in slower snake', default=100)
-    parser.add_argument('-ai', metavar='player_type', type=str, nargs='?',
-                        help='y/n where "y" activates AI play, "n" allows for manual play', default='n')
+
+    parser = argparse.ArgumentParser(description='A Snake game (created for training an AI), '
+                                        'but also available for manual play')
+    parser.add_argument('-d', metavar='delay', type=int, nargs='?', help='delays speed of snake (e.g. lower values '
+                                        'result in faster snake, higher values result in slower snake', default=100)
+    parser.add_argument('-ai', metavar='player_type', type=str, nargs='?', help='y/n where "y" activates AI play, '
+    					'"n" allows for manual play', default='n')
+    parser.add_argument('-i', metavar='iterations', type=int, nargs='?', help='number of q-learning iterations', default = 1)
 
     # parse arguments
     args = parser.parse_args()
     delay = vars(args)['d']
     ai_play = vars(args)['ai']
-
-    return delay, ai_play
-
+    iterations = vars(args)['i']
+    return delay, ai_play,iterations
 
 if __name__ == "__main__":
-    # parse command line
-    delay, ai_play = parse_args()
-
+	# parse command line
+	delay, ai_play,iterations = parse_args()
+    
     # initialize and select game play
-    snake_game = Game()
-    snake_game.pygame_init()
-    if ai_play == 'y':
-        snake_game.ai_play(delay)
-    else:
-        snake_game.human_play(delay)
-
-    pygame.quit()
+	snake_game = Game()
+	print(delay)
+	while (bool(snake_game.game_exit) == False):
+		snake_game.pygame_init()
+		if ai_play == 'y':
+			snake_game.ai_play(delay,iterations)
+		else:
+			snake_game.human_play(delay,iterations)
+	
+	pygame.quit()
