@@ -43,21 +43,21 @@ class Snake:
         """
         Updates snake body based on new movements
         """
-        # update body position
+        # update body
         for i in range(self.length - 1, 0, -1):
             self.x[i] = self.x[i - 1]
             self.y[i] = self.y[i - 1]
         self.tail = self.x[-1], self.y[-1]
 
-        # update position of head of snake
+        # update head
         if self.direction == 0:
-            self.x[0] = self.x[0] + constant.TILE
+            self.x[0] += constant.TILE
         if self.direction == 1:
-            self.x[0] = self.x[0] - constant.TILE
+            self.x[0] -= constant.TILE
         if self.direction == 2:
-            self.y[0] = self.y[0] - constant.TILE
+            self.y[0] -= constant.TILE
         if self.direction == 3:
-            self.y[0] = self.y[0] + constant.TILE
+            self.y[0] += constant.TILE
         self.head = self.x[0], self.y[0]
 
     def eats_mouse(self, mouse_x: int, mouse_y: int) -> bool:
@@ -77,13 +77,19 @@ class Snake:
                 self.length += 1
 
                 # update the rest of body
-                for j in range(self.length - 2, 1, -1):
+                for j in range(self.length - 2, 0, -1):
                     self.x[j] = self.x[j - 1]
                     self.y[j] = self.y[j - 1]
 
                 # update head
-                self.x[0] = mouse_x
-                self.y[0] = mouse_y
+                if self.direction == 0:
+                    self.x[0] += constant.TILE
+                if self.direction == 1:
+                    self.x[0] -= constant.TILE
+                if self.direction == 2:
+                    self.y[0] -= constant.TILE
+                if self.direction == 3:
+                    self.y[0] += constant.TILE
                 self.head = self.x[0], self.y[0]
 
                 return True
