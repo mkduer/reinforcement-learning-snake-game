@@ -42,10 +42,9 @@ class Game:
         """
         Print game results and exit the game
         """
-        print('\nSnake collided with ' + collision_type + '. You lose!')
+        print('\nGAME OVER! Snake collided with ' + collision_type)
         print("Score: " + str(self.score))
         print("Total Frames: " + str(self.frames))  # TODO: needed?
-        self._running = False
         if ai_play:
             self.check_episode()
 
@@ -64,12 +63,15 @@ class Game:
 
         # if snake collides with itself
         if self.snake.body_collision():
+            print(f'body collision')
+            self._running = False
             if ai_play:
                 self.q.update_reward('snake')
             self.game_over('itself', ai_play)
 
         # if snake collides with walls
         if self.snake.wall_collision(0, self.window_width, 0, self.window_height):
+            self._running = False
             if ai_play:
                 self.q.update_reward('wall')
             self.game_over('the wall', ai_play)
@@ -127,7 +129,7 @@ class Game:
             tail_loc = self.snake.tail_coordinates()
             state = self.q.define_state(tail_loc, mouse_loc)
             action = self.q.select_action(state)
-            print(f'action: {action}')  # TODO testing print, useful when snake hits walls, remove when done
+            #print(f'action: {action}')  # TODO testing print, useful when snake hits walls, remove when done
 
             if action == 'east':
                 self.snake.move_east()
@@ -152,10 +154,13 @@ class Game:
             self.frames += 1
 
     def check_episode(self):
-        # display the Q table if it's the last episode
+        self.q.display_table(ordered=False)
+        print('\n')
+        time.sleep(5)  # TODO remove or use
         if self.episode >= constant.EPISODES:
-            print(f'FINAL EPISODE {self.episode}:')
-            self.q.display_table(ordered=False)
+            # TODO: remove if not using
+            #print(f'FINAL EPISODE {self.episode}')
+            #self.q.display_table(ordered=False)
             exit(0)
 
         # reset the game specs
@@ -177,7 +182,7 @@ def parse_args():
                                                  'with reinforcement learning')
     parser.add_argument('-d', metavar='delay', type=int, nargs='?',
                         help='delays speed of snake (e.g. lower values result in faster snake, '
-                             'higher values result in slower snake', default=100)
+                             'higher values result in slower snake', default=150)
     parser.add_argument('-ai', metavar='player_type', type=str, nargs='?',
                         help='y/n where "y" activates AI play, "n" allows for manual play', default='n')
 
@@ -191,14 +196,14 @@ def parse_args():
 
 if __name__ == "__main__":
     # parse command line
-    delay, ai_play = parse_args()
+    delayed, ai = parse_args()
 
     # initialize and select game play
     snake_game = Game()
     snake_game.pygame_init()
-    if ai_play == 'y':
-        snake_game.ai_play(delay)
+    if ai == 'y':
+        snake_game.ai(delayed)
     else:
-        snake_game.human_play(delay)
+        snake_game.human_play(delayed)
 
     pygame.quit()
