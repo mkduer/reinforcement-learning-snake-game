@@ -155,12 +155,7 @@ class Game:
 
     def check_episode(self):
         self.q.display_table(ordered=False)
-        print('\n')
-        time.sleep(5)  # TODO remove or use
         if self.episode >= constant.EPISODES:
-            # TODO: remove if not using
-            #print(f'FINAL EPISODE {self.episode}')
-            #self.q.display_table(ordered=False)
             exit(0)
 
         # reset the game specs
@@ -182,7 +177,7 @@ def parse_args():
                                                  'with reinforcement learning')
     parser.add_argument('-d', metavar='delay', type=int, nargs='?',
                         help='delays speed of snake (e.g. lower values result in faster snake, '
-                             'higher values result in slower snake', default=150)
+                             'higher values result in slower snake', default=10)
     parser.add_argument('-ai', metavar='player_type', type=str, nargs='?',
                         help='y/n where "y" activates AI play, "n" allows for manual play', default='n')
 
@@ -202,7 +197,7 @@ if __name__ == "__main__":
     snake_game = Game()
     snake_game.pygame_init()
     if ai == 'y':
-        snake_game.ai(delayed)
+        snake_game.ai_play(delayed)
     else:
         snake_game.human_play(delayed)
 
