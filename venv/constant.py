@@ -1,7 +1,7 @@
-# Grid and display measurements
+# grid and display measurements
 TILE = 44
-WIDTH = 5
-HEIGHT = 5
+WIDTH = 10
+HEIGHT = 10
 SNAKE_LENGTH = 1
 START_DIRECTION = 0
 
@@ -11,4 +11,4 @@ WALL = -10
 SNAKE = -10
 
 # total episodes
-EPISODES = 10
+EPISODES = 100

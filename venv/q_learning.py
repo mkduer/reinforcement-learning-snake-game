@@ -14,7 +14,6 @@ class QLearning:
         self.discount_factor = 0.9
         self.reward = 0
 
-
     def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)) -> {str: int}:
         """
         Creates state based on the snake's origin head relative to its tail and relative to the mouse
@@ -84,6 +83,7 @@ class QLearning:
         else:
             for state in self.table:
                 print(f'{state}: {self.table[state]}')
+        print('\n')
 
 
 def main():

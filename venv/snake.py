@@ -110,9 +110,9 @@ class Snake:
         Check if the snake collided with the wall
         :return: True if collision occurred, False otherwise
         """
-        if self.head[0] < x_base or self.head[0] + constant.TILE > x_max:
+        if self.head[0] < x_base or self.head[0] > x_max:
             return True
-        if self.head[1] < y_base or self.head[1] + constant.TILE > y_max:
+        if self.head[1] < y_base or self.head[1] > y_max:
             return True
         return False
 
