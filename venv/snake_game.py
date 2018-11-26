@@ -38,7 +38,7 @@ class Game:
         # source for mouse: http://pixelartmaker.com/art/3d272b1bf180b60.png
         self._mouse = pygame.image.load("img/mouse_mini.png").convert()
 
-    def on_collision(self, collision_type: str):
+    def game_over(self, collision_type: str, ai_play: bool):
         """
         Print game results and exit the game
         """
@@ -46,7 +46,8 @@ class Game:
         print("Score: " + str(self.score))
         print("Total Frames: " + str(self.frames))  # TODO: needed?
         self._running = False
-        self.check_episode()
+        if ai_play:
+            self.check_episode()
 
     def snake_status(self, ai_play: bool):
         """
@@ -65,13 +66,13 @@ class Game:
         if self.snake.body_collision():
             if ai_play:
                 self.q.update_reward('snake')
-            self.on_collision('itself')
+            self.game_over('itself', ai_play)
 
         # if snake collides with walls
         if self.snake.wall_collision(0, self.window_width, 0, self.window_height):
             if ai_play:
                 self.q.update_reward('wall')
-            self.on_collision('the wall')
+            self.game_over('the wall', ai_play)
 
     def render(self):
         """
@@ -152,7 +153,7 @@ class Game:
 
     def check_episode(self):
         # display the Q table if it's the last episode
-        if self.episode > constant.EPISODES:
+        if self.episode >= constant.EPISODES:
             print(f'FINAL EPISODE {self.episode}:')
             self.q.display_table()
             exit(0)
