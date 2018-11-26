@@ -73,6 +73,9 @@ class QLearning:
         max_action = q_next[prediction]
         q_current[action] = q_current[action] + self.learning_rate * (self.reward + self.discount_factor * (max_action - q_current[action]))
 
+    def display_table(self):
+        for state in self.table:
+            print(self.table[state])
 
 def main():
     # local, class testing
