@@ -4,10 +4,17 @@ import constant
 class Snake:
 
     def __init__(self):
-        self.length = 3
-        self.direction = 0
+        self.length = constant.SNAKE_LENGTH
+        self.direction = constant.START_DIRECTION
+        self.x, self.y = [], []
+        self.head = (0, 0)
+        self.tail = (0, 0)
+        self.initialize_positions()
 
-        # Initialize coordinates
+    def initialize_positions(self):
+        """
+        Initializes the position of the snake
+        """
         self.x = []
         self.y = []
 

@@ -25,7 +25,7 @@ class Game:
         self.snake = Snake()
         self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
         self.q = QLearning()
-
+        self.episode = 1
 
     def pygame_init(self):
         """
@@ -45,15 +45,8 @@ class Game:
         print('\nSnake collided with ' + collision_type + '. You lose!')
         print("Score: " + str(self.score))
         print("Total Frames: " + str(self.frames))  # TODO: needed?
-        exit(0)  # TODO: this can be altered to a reset game with a reset function, Chris will work on this
-
-        # TODO: suggested implementation that works, can be improved upon
-        """
-        print(f'NEW GAME:')
-        snake_game = Game()
-        snake_game.pygame_init()
-        snake_game.ai_play(delay)
-        """
+        self._running = False
+        self.check_episode()
 
     def snake_status(self, ai_play: bool):
         """
@@ -135,7 +128,6 @@ class Game:
             action = self.q.select_action(state)
             print(f'action: {action}')  # TODO testing print, useful when snake hits walls
 
-
             if action == 'east':
                 self.snake.move_east()
             elif action == 'west':
@@ -158,18 +150,35 @@ class Game:
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
 
+    def check_episode(self):
+        # display the Q table if it's the last episode
+        if self.episode > constant.EPISODES:
+            print(f'FINAL EPISODE {self.episode}:')
+            self.q.display_table()
+            exit(0)
+
+        # reset the game specs
+        self.episode += 1
+        print(f'NEW GAME, EPISODE {self.episode}')
+        self.score = 0
+        self.frames = 0
+        self._running = True
+        self.snake.initialize_positions()
+        self.mouse.x, self.mouse.y = self.mouse.generate_mouse(self.snake.body_position())
+
 
 def parse_args():
     """ purpose: parse command line arguments if they are available
         return: values associated with flag(s)"""
 
     # define arguments and types
-    parser = argparse.ArgumentParser(description='A Snake game (created for training an AI), '
-                                        'but also available for manual play')
-    parser.add_argument('-d', metavar='delay', type=int, nargs='?', help='delays speed of snake (e.g. lower values '
-                                        'result in faster snake, higher values result in slower snake', default=100)
-    parser.add_argument('-ai', metavar='player_type', type=str, nargs='?', help='y/n where "y" activates AI play, '
-                                        '"n" allows for manual play', default='n')
+    parser = argparse.ArgumentParser(description='Snake Game: available for manual play, but created for training an AI'
+                                                 'with reinforcement learning')
+    parser.add_argument('-d', metavar='delay', type=int, nargs='?',
+                        help='delays speed of snake (e.g. lower values result in faster snake, '
+                             'higher values result in slower snake', default=100)
+    parser.add_argument('-ai', metavar='player_type', type=str, nargs='?',
+                        help='y/n where "y" activates AI play, "n" allows for manual play', default='n')
 
     # parse arguments
     args = parser.parse_args()
