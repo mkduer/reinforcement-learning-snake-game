@@ -1,7 +1,7 @@
 # Grid and display measurements
 TILE = 44
-WIDTH = 3
-HEIGHT = 3
+WIDTH = 5
+HEIGHT = 5
 SNAKE_LENGTH = 1
 START_DIRECTION = 0
 

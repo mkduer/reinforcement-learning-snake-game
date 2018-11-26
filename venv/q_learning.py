@@ -74,18 +74,17 @@ class QLearning:
         """
         prediction = self.select_action(q_next)
         max_action = q_next[prediction]
-        print(f'reward: {self.reward}')
         q_current[action] = q_current[action] + self.learning_rate * (self.reward + self.discount_factor * (max_action - q_current[action]))
-        print(f'q_current: {q_current[action]}')
 
-    def display_table(self):
-        """
-        for state in self.table:
-            print(f'{state}: {self.table[state]}')
-            """
-        od_table = OrderedDict(sorted(self.table.items()))
-        for state in od_table:
-            print(f'{state}: {self.table[state]}')
+    def display_table(self, ordered: bool):
+        if ordered:
+            od_table = OrderedDict(sorted(self.table.items()))
+            for state in od_table:
+                print(f'{state}: {self.table[state]}')
+        else:
+            for state in self.table:
+                print(f'{state}: {self.table[state]}')
+
 
 def main():
     # local, class testing

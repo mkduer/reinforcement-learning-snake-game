@@ -127,7 +127,7 @@ class Game:
             tail_loc = self.snake.tail_coordinates()
             state = self.q.define_state(tail_loc, mouse_loc)
             action = self.q.select_action(state)
-            print(f'action: {action}')  # TODO testing print, useful when snake hits walls
+            print(f'action: {action}')  # TODO testing print, useful when snake hits walls, remove when done
 
             if action == 'east':
                 self.snake.move_east()
@@ -155,7 +155,7 @@ class Game:
         # display the Q table if it's the last episode
         if self.episode >= constant.EPISODES:
             print(f'FINAL EPISODE {self.episode}:')
-            self.q.display_table()
+            self.q.display_table(ordered=False)
             exit(0)
 
         # reset the game specs
