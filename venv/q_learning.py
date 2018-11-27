@@ -1,5 +1,6 @@
 from random import randint
 import constant
+from collections import OrderedDict  # TODO remove when code is tested
 
 
 class QLearning:
@@ -13,7 +14,6 @@ class QLearning:
         self.discount_factor = 0.9
         self.reward = 0
 
-
     def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)) -> {str: int}:
         """
         Creates state based on the snake's origin head relative to its tail and relative to the mouse
@@ -21,6 +21,8 @@ class QLearning:
         :param mouse_loc: mouse coordinates
         :return: the state key
         """
+        tail_loc = int(tail_loc[0]/44), int(tail_loc[1]/44)
+        mouse_loc = int(mouse_loc[0]/44), int(mouse_loc[1]/44)
         key = str(tail_loc) + str(mouse_loc)
 
         # if Q value does not exist
@@ -50,11 +52,11 @@ class QLearning:
         :param reward_type: a string representing what the snake encountered
         """
         if reward_type == 'mouse':
-            self.reward + constant.MOUSE
+            self.reward += constant.MOUSE
         elif reward_type == 'wall':
-            self.reward + constant.WALL
+            self.reward += constant.WALL
         elif reward_type == 'snake':
-            self.reward + constant.SNAKE
+            self.reward += constant.SNAKE
 
     def reset_reward(self):
         """
@@ -73,9 +75,16 @@ class QLearning:
         max_action = q_next[prediction]
         q_current[action] = q_current[action] + self.learning_rate * (self.reward + self.discount_factor * (max_action - q_current[action]))
 
-    def display_table(self):
-        for state in self.table:
-            print(self.table[state])
+    def display_table(self, ordered: bool):
+        if ordered:
+            od_table = OrderedDict(sorted(self.table.items()))
+            for state in od_table:
+                print(f'{state}: {self.table[state]}')
+        else:
+            for state in self.table:
+                print(f'{state}: {self.table[state]}')
+        print('\n')
+
 
 def main():
     # local, class testing

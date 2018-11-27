@@ -1,8 +1,8 @@
-# Grid and display measurements
+# grid and display measurements
 TILE = 44
-WIDTH = 6
+WIDTH = 10
 HEIGHT = 10
-SNAKE_LENGTH = 3
+SNAKE_LENGTH = 1
 START_DIRECTION = 0
 
 # rewards

@@ -38,26 +38,27 @@ class Snake:
 
         self.tail = self.x[-1], self.y[-1]
         self.head = self.x[0], self.y[0]
+        self.length = constant.SNAKE_LENGTH
 
     def update(self):
         """
         Updates snake body based on new movements
         """
-        # update body position
+        # update body
         for i in range(self.length - 1, 0, -1):
             self.x[i] = self.x[i - 1]
             self.y[i] = self.y[i - 1]
         self.tail = self.x[-1], self.y[-1]
 
-        # update position of head of snake
+        # update head
         if self.direction == 0:
-            self.x[0] = self.x[0] + constant.TILE
+            self.x[0] += constant.TILE
         if self.direction == 1:
-            self.x[0] = self.x[0] - constant.TILE
+            self.x[0] -= constant.TILE
         if self.direction == 2:
-            self.y[0] = self.y[0] - constant.TILE
+            self.y[0] -= constant.TILE
         if self.direction == 3:
-            self.y[0] = self.y[0] + constant.TILE
+            self.y[0] += constant.TILE
         self.head = self.x[0], self.y[0]
 
     def eats_mouse(self, mouse_x: int, mouse_y: int) -> bool:
@@ -77,13 +78,19 @@ class Snake:
                 self.length += 1
 
                 # update the rest of body
-                for j in range(self.length - 2, 1, -1):
+                for j in range(self.length - 2, 0, -1):
                     self.x[j] = self.x[j - 1]
                     self.y[j] = self.y[j - 1]
 
                 # update head
-                self.x[0] = mouse_x
-                self.y[0] = mouse_y
+                if self.direction == 0:
+                    self.x[0] += constant.TILE
+                if self.direction == 1:
+                    self.x[0] -= constant.TILE
+                if self.direction == 2:
+                    self.y[0] -= constant.TILE
+                if self.direction == 3:
+                    self.y[0] += constant.TILE
                 self.head = self.x[0], self.y[0]
 
                 return True
@@ -104,9 +111,9 @@ class Snake:
         Check if the snake collided with the wall
         :return: True if collision occurred, False otherwise
         """
-        if self.head[0] < x_base or self.head[0] + constant.TILE > x_max:
+        if self.head[0] < x_base or self.head[0] > x_max:
             return True
-        if self.head[1] < y_base or self.head[1] + constant.TILE > y_max:
+        if self.head[1] < y_base or self.head[1] > y_max:
             return True
         return False
 
