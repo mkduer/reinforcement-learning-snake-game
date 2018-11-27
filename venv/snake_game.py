@@ -25,6 +25,7 @@ class Game:
         self.snake = Snake()
         self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
         self.q = QLearning()
+        
         self.episode = 1
 
     def pygame_init(self):
@@ -38,16 +39,16 @@ class Game:
         # source for mouse: http://pixelartmaker.com/art/3d272b1bf180b60.png
         self._mouse = pygame.image.load("img/mouse_mini.png").convert()
 
-    def game_over(self, collision_type: str, ai_play: bool):
+    def game_over(self, collision_type: str, ai_play: bool, episode_total_number: int):
         """
         Print game results and exit the game
         """
         print('\nGAME OVER! Snake collided with ' + collision_type)
         print("Score: " + str(self.score))
-        if ai_play:
-            self.next_episode()
+        self._running = False
+        self.next_episode(episode_total_number)
 
-    def snake_status(self, ai_play: bool):
+    def snake_status(self, ai_play: bool, episode_total_number :int):
         """
         Check whether the snake has eaten the mouse or encountered a collision
         """
@@ -65,14 +66,14 @@ class Game:
             self._running = False
             if ai_play:
                 self.q.update_reward('snake')
-            self.game_over('itself', ai_play)
+            self.game_over('itself', ai_play,episode_total_number)
 
         # if snake collides with walls
         elif self.snake.wall_collision(0, self.window_width, 0, self.window_height):
             self._running = False
             if ai_play:
                 self.q.update_reward('wall')
-            self.game_over('the wall', ai_play)
+            self.game_over('the wall', ai_play,episode_total_number)
 
         else:
             if ai_play:
@@ -87,13 +88,14 @@ class Game:
         self.mouse.draw(self._display, self._mouse)
         pygame.display.flip()
 
-    def human_play(self, delay: int):
+    def human_play(self, delay: int, episode_total_number: int ):
         """
         Executes the game play, snake movements, and loops until the game ends.
         Keys can be used to play the game.
         :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
         (e.g. 1000) result in very slow frames
         """
+
         while self._running:
             pygame.event.pump()
             keys = pygame.key.get_pressed()
@@ -109,13 +111,13 @@ class Game:
             elif keys[pygame.K_ESCAPE]:
                 self._running = False
 
-            self.snake_status(ai_play=False)
+            self.snake_status(False, episode_total_number)
             self.render()
-
+			
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
 
-    def ai_play(self, delay: int):
+    def ai_play(self, delay: int, episode_total_number: int):
         """
         Executes the game play, snake movements, and loops until the game ends.
         Movements are implemented by the AI rather than by a human pressing keys.
@@ -150,7 +152,7 @@ class Game:
             tail_loc = self.snake.tail_coordinates()
             next_state = self.q.define_state(tail_loc, mouse_loc)
 
-            self.snake_status(True)
+            self.snake_status(True,episode_total_number)
             self.q.update(state, next_state, action)
             self.q.reset_reward()
             self.render()
@@ -158,15 +160,13 @@ class Game:
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
 
-    def next_episode(self):
+    def next_episode(self, episode_total_number: int):
         """
         Sets-up the next episode or completes the final episode
-        :return:
+        :param: episode_total_number: total number of episodes
         """
         self.q.display_table(ordered=False)
-
-        if self.episode >= constant.EPISODES:
-            self._running = False
+        if self.episode >= episode_total_number:
             exit(0)
 
         # reset the game specs
@@ -186,32 +186,34 @@ def parse_args():
     """
 
     # define arguments and types
-    parser = argparse.ArgumentParser(description='Snake Game: available for manual play, but created for training an AI'
-                                                 'with reinforcement learning')
-    parser.add_argument('-d', metavar='delay', type=int, nargs='?',
-                        help='delays speed of snake (e.g. lower values result in faster snake, '
-                             'higher values result in slower snake', default=10)
-    parser.add_argument('-ai', metavar='player_type', type=str, nargs='?',
-                        help='y/n where "y" activates AI play, "n" allows for manual play', default='n')
+
+    parser = argparse.ArgumentParser(description='A Snake game (created for training an AI), '
+                                        'but also available for manual play')
+    parser.add_argument('-d', metavar='delay', type=int, nargs='?', help='delays speed of snake (e.g. lower values '
+                                        'result in faster snake, higher values result in slower snake', default=100)
+    parser.add_argument('-ai', metavar='player_type', type=str, nargs='?', help='y/n where "y" activates AI play, '
+    					'"n" allows for manual play', default='n')
+    parser.add_argument('-i', metavar='number of episodes', type=int, nargs='?', help='number of q-learning episodes', default=10)
 
     # parse arguments
     args = parser.parse_args()
     delay = vars(args)['d']
     ai_play = vars(args)['ai']
-
-    return delay, ai_play
-
+    episode_total_number = vars(args)['i']
+    return delay, ai_play, episode_total_number
 
 if __name__ == "__main__":
-    # parse command line
-    delayed, ai = parse_args()
 
+    # parse command line
+    delayed, ai, episode_total_number = parse_args()
+   
     # initialize and select game play
     snake_game = Game()
     snake_game.pygame_init()
     if ai == 'y':
-        snake_game.ai_play(delayed)
+        snake_game.ai_play(delayed,episode_total_number)
     else:
-        snake_game.human_play(delayed)
+        snake_game.human_play(delayed,episode_total_number)
 
     pygame.quit()
+

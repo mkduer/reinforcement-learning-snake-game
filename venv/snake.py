@@ -39,6 +39,7 @@ class Snake:
 
         self.tail = self.x[-1], self.y[-1]
         self.head = self.x[0], self.y[0]
+        self.length = constant.SNAKE_LENGTH
 
     def update(self):
         """
