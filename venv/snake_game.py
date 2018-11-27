@@ -25,12 +25,8 @@ class Game:
         self.snake = Snake()
         self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
         self.q = QLearning()
-
+        
         self.episode = 1
-
-        self.game_exit = False
-        self.collision_state = False
-        self.iteration_count = 0
 
     def pygame_init(self):
         """
@@ -49,13 +45,8 @@ class Game:
         """
         print('\nGAME OVER! Snake collided with ' + collision_type)
         print("Score: " + str(self.score))
-        
         self._running = False
-        #self.check_episode(episode_total_number)
-#merge bits together
-        print("Total Frames: " + str(self.frames))  # TODO: needed?
-        self.check_episode(episode_total_number)
-
+        self.next_episode(episode_total_number)
 
     def snake_status(self, ai_play: bool, episode_total_number :int):
         """
@@ -71,19 +62,22 @@ class Game:
                 self.q.update_reward('mouse')
 
         # if snake collides with itself
-        if self.snake.body_collision():
-            print(f'body collision')
+        elif self.snake.body_collision():
             self._running = False
             if ai_play:
                 self.q.update_reward('snake')
             self.game_over('itself', ai_play,episode_total_number)
 
         # if snake collides with walls
-        if self.snake.wall_collision(0, self.window_width, 0, self.window_height):
+        elif self.snake.wall_collision(0, self.window_width, 0, self.window_height):
             self._running = False
             if ai_play:
                 self.q.update_reward('wall')
             self.game_over('the wall', ai_play,episode_total_number)
+
+        else:
+            if ai_play:
+                self.q.update_reward('empty')
 
     def render(self):
         """
@@ -130,16 +124,19 @@ class Game:
         :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
         (e.g. 1000) result in very slow frames
         """
-
         while self._running:
             pygame.event.pump()
 
             snake_head = self.snake.head_coordinates()
             mouse_loc = self.mouse.relative_coordinates(snake_head)
             tail_loc = self.snake.tail_coordinates()
+            # TODO: test print for absolute and relative positions
+            """
+            print(f'head: {snake_head}, tail: {tail_loc}, '
+                  f'mouse abs: {self.mouse.x}, {self.mouse.y}, rel: {mouse_loc}')
+                  """
             state = self.q.define_state(tail_loc, mouse_loc)
             action = self.q.select_action(state)
-            #print(f'action: {action}')  # TODO testing print, useful when snake hits walls, remove when done
 
             if action == 'east':
                 self.snake.move_east()
@@ -163,7 +160,11 @@ class Game:
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
 
-    def check_episode(self, episode_total_number: int):
+    def next_episode(self, episode_total_number: int):
+        """
+        Sets-up the next episode or completes the final episode
+        :param: episode_total_number: total number of episodes
+        """
         self.q.display_table(ordered=False)
         if self.episode >= episode_total_number:
             exit(0)
@@ -179,8 +180,10 @@ class Game:
 
 
 def parse_args():
-    """ purpose: parse command line arguments if they are available
-        return: values associated with flag(s)"""
+    """
+    Parse command line arguments if they are available
+    :return: values associated with flag(s)
+    """
 
     # define arguments and types
 
@@ -190,14 +193,14 @@ def parse_args():
                                         'result in faster snake, higher values result in slower snake', default=100)
     parser.add_argument('-ai', metavar='player_type', type=str, nargs='?', help='y/n where "y" activates AI play, '
     					'"n" allows for manual play', default='n')
-    parser.add_argument('-i', metavar='number of episodes', type=int, nargs='?', help='number of q-learning episodes', default = 1)
+    parser.add_argument('-i', metavar='number of episodes', type=int, nargs='?', help='number of q-learning episodes', default=10)
 
     # parse arguments
     args = parser.parse_args()
     delay = vars(args)['d']
     ai_play = vars(args)['ai']
     episode_total_number = vars(args)['i']
-    return delay, ai_play,episode_total_number
+    return delay, ai_play, episode_total_number
 
 if __name__ == "__main__":
 
