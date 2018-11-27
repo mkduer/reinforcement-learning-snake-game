@@ -6,9 +6,10 @@ SNAKE_LENGTH = 1
 START_DIRECTION = 0
 
 # rewards
-MOUSE = 1
-WALL = -10
-SNAKE = -10
+MOUSE = 20
+WALL = -100
+SNAKE = -100
+EMPTY = 0
 
 # total episodes
-EPISODES = 100
+EPISODES = 1000

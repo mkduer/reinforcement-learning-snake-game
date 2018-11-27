@@ -15,6 +15,7 @@ class Snake:
         """
         Initializes the position of the snake
         """
+        self.length = constant.SNAKE_LENGTH
         self.x = []
         self.y = []
 
@@ -166,15 +167,6 @@ class Snake:
         Calculates the relative position of the tail relative to the snake's origin head
         :return the relative coordinates
         """
-        new_x, new_y = (0, 0)
-
-        if self.x[0] > self.tail[0]:
-            new_x = self.x[0] - self.tail[0]
-        if self.x[0] < self.tail[0]:
-            new_x = self.tail[0] - self.x[0]
-        if self.y[0] > self.tail[1]:
-            new_y = self.y[0] - self.tail[1]
-        if self.y[0] < self.tail[1]:
-            new_y = self.tail[1] - self.y[0]
-
+        new_x = self.tail[0] - self.head[0]
+        new_y = self.tail[1] - self.head[1]
         return new_x, new_y

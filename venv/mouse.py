@@ -23,9 +23,12 @@ class Mouse:
         :param snake_body: snake body's coordinates
         :return: the new x, y coordinates for the mouse
         """
-        unique = False
+        # x, y = 5 * 44, 5 * 44  # TODO: test for generating the same mouse coordinates
 
+        """
+        unique = False
         length = len(snake_body[0])
+
         while not unique:
             x = randint(0, self.grid_width - 1) * constant.TILE
             y = randint(0, self.grid_height - 1) * constant.TILE
@@ -33,6 +36,7 @@ class Mouse:
                 if x == snake_body[0][i] and y == snake_body[1][i]:
                     break
             unique = True
+            """
 
         return x, y
 
@@ -42,15 +46,6 @@ class Mouse:
         :param snake_head: the snake head's coordinates
         :return the relative coordinates
         """
-        new_x, new_y = (0, 0)
-
-        if snake_head[0] > self.x:
-            new_x = snake_head[0] - self.x
-        if snake_head[0] < self.x:
-            new_x = self.x - snake_head[0]
-        if snake_head[1] > self.y:
-            new_y = snake_head[1] - self.y
-        if snake_head[1] < self.y:
-            new_y = self.y - snake_head[1]
-
+        new_x = self.x - snake_head[0]
+        new_y = self.y - snake_head[1]
         return new_x, new_y

@@ -1,6 +1,6 @@
-from random import randint
+from random import choice
 import constant
-from collections import OrderedDict  # TODO remove when code is tested
+from collections import OrderedDict
 
 
 class QLearning:
@@ -14,7 +14,7 @@ class QLearning:
         self.discount_factor = 0.9
         self.reward = 0
 
-    def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)) -> {str: int}:
+    def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)) -> {str: float}:
         """
         Creates state based on the snake's origin head relative to its tail and relative to the mouse
         :param tail_loc: tail coordinates
@@ -30,19 +30,20 @@ class QLearning:
             self.table[key] = {'north': 0, 'east': 0, 'south': 0, 'west': 0}
         return self.table[key]
 
-    def select_action(self, state: {str: int}):
+    def select_action(self, state: {str: float}):
         """
         Given the state details, choose the optimal action i.e. the maximal choice or, if there is
         no obvious maximum, a randomized action
         :param state: the state and actions
         :return: the selected action
         """
-        action = self.all_actions[randint(0, 3)]
-        max_choice = state[action]
+        action = choice(self.all_actions)
+        max_val = state[action]
 
         for a in state:
-            if state[a] > max_choice:
+            if state[a] > max_val:
                 action = a
+                max_val = state[a]
 
         return action
 
@@ -57,6 +58,8 @@ class QLearning:
             self.reward += constant.WALL
         elif reward_type == 'snake':
             self.reward += constant.SNAKE
+        elif reward_type == 'empty':
+            self.reward += constant.EMPTY
 
     def reset_reward(self):
         """
@@ -64,7 +67,7 @@ class QLearning:
         """
         self.reward = 0
 
-    def update(self, q_current: {str: int}, q_next: {str: int}, action: str):
+    def update(self, q_current: {str: float}, q_next: {str: float}, action: str):
         """
         Implements the Q learning algorithm with temporal difference and set hyperparameters
         :param q_current: the current state
