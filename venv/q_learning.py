@@ -1,4 +1,8 @@
 from random import choice
+import os
+from shutil import rmtree
+from time import sleep
+from json import dump, load
 import constant
 
 
@@ -85,3 +89,27 @@ class QLearning:
         for state in self.table:
             print(f'{state}: {self.table[state]}')
         print('\n')
+
+    def save_table(self, episode: int, clear_dir: bool):
+        """
+        Saves table to specified directory. If specified, the directory is cleared in order to remove previous
+        episodes that may not otherwise be replaced due to a changed episode save (modulo value change).
+        If the directory doesn't exist, it is created.
+        :param episode: episode number
+        :param clear_dir: if True, the directory and its contents will be removed, if False, nothing is explicitly removed
+        """
+        path = './json/'
+
+        # clear directory if specified by function call
+        if clear_dir and episode == 1 and os.path.exists(path):
+            rmtree(path)
+
+        # create directory if it doesn't exist
+        if not os.path.exists(path):
+            os.mkpath(path)
+
+        # save tables to external files
+        outfile = path + 'episode' + str(episode) + '.json'
+        with open(outfile, 'w') as f:
+            dump(self.table, f, indent=2)
+            f.close()

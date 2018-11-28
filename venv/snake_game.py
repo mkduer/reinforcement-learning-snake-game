@@ -1,6 +1,6 @@
 import pygame
 import argparse
-import time
+from time import sleep
 
 from mouse import Mouse
 from snake import Snake
@@ -15,7 +15,9 @@ class Game:
         self.window_width = constant.WIDTH * constant.TILE
         self.window_height = constant.HEIGHT * constant.TILE
         self.score = 0
+        self.max_score = 0
         self.frames = 0
+        self.episode = 1
 
         self._running = True
         self._display = None
@@ -25,8 +27,6 @@ class Game:
         self.snake = Snake()
         self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
         self.q = QLearning()
-        
-        self.episode = 1
 
     def initialize_pygame(self):
         """
@@ -43,12 +43,23 @@ class Game:
         """
         Print game results and exit the game
         """
-        print(f'GAME OVER! Snake collided with {collision_type}')
         self.snake.update_tail()
         self._running = False
-        # self.q.display_table()  # TODO display table
-        print(f'SCORE: {self.score}, LENGTH: {self.snake.length}')
+        if self.score > self.max_score:
+            self.max_score = self.score
+        self.display(collision_type)
         self.next_episode(total_episodes)
+
+    def display(self, collision_type: str):
+        """
+        Displays game over status and scores, and can call display/save data functions
+        :param collision_type: what type of collision ended the game
+        """
+        if self.episode % constant.SAVE_EPISODE == 0:
+            #self.q.display_table()  # optional
+            self.q.save_table(self.episode, clear_dir=True)
+        print(f'GAME OVER! Snake collided with {collision_type}')
+        print(f'SCORE: {self.score}')
 
     def move_snake(self, ai_play: bool, total_episodes: int):
         """
@@ -65,14 +76,12 @@ class Game:
 
         # if snake collides with itself
         elif self.snake.body_collision():
-            self._running = False
             if ai_play:
                 self.q.update_reward('snake')
             self.game_over('itself', total_episodes)
 
         # if snake collides with walls
         elif self.snake.wall_collision(0, self.window_width, 0, self.window_height):
-            self._running = False
             if ai_play:
                 self.q.update_reward('wall')
             self.game_over('the wall', total_episodes)
@@ -123,7 +132,7 @@ class Game:
 
             self.move_snake(False, total_episodes)
             self.render()
-            time.sleep(float(delay) / 1000.0)
+            sleep(float(delay) / 1000)
             self.frames += 1
 
     def set_direction(self, direction: str):
@@ -165,7 +174,7 @@ class Game:
 
             self.render()
 
-            time.sleep(float(delay) / 1000.0)
+            sleep(float(delay) / 1000)
             self.frames += 1
 
     def ai_test(self, delay: int):
@@ -187,10 +196,10 @@ class Game:
             self.move_snake(True, 1)
             self.render()
 
-            time.sleep(float(delay) / 1000.0)
+            sleep(float(delay) / 1000)
             self.frames += 1
 
-        print(f'FINAL SCORE: {self.score}')
+        print(f'FINAL SCORE: {self.score}, FINAL MAX SCORE: {self.max_score}')
 
     def reset_game(self, caption: str):
         pygame.display.set_caption(caption)
