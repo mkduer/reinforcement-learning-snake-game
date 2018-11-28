@@ -1,7 +1,13 @@
 # command line default values
 EPISODES = 10
 DELAY = 10
-SAVE_EPISODE = 5
+SAVE_EPISODE = 10
+
+# external files
+DELETE_DIR = True
+RESUME_FILE = False
+RESUME_EPISODE = 10
+JSON_DIR = './json/'
 
 # grid and display measurements
 TILE = 44
@@ -20,4 +26,4 @@ SOUTH = (0, -1)
 MOUSE = 200
 WALL = -100
 SNAKE = -100
-EMPTY = -1
+EMPTY = -10
