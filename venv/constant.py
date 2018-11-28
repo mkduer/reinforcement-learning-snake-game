@@ -1,6 +1,6 @@
 # command line default values
 EPISODES = 10
-DELAY = 10
+DELAY = 200
 SAVE_EPISODE = 5
 
 # grid and display measurements
@@ -13,8 +13,8 @@ SNAKE_X, SNAKE_Y = 2 * 44, 2 * 44
 # directions
 EAST = (1, 0)
 WEST = (-1, 0)
-NORTH = (0, 1)
-SOUTH = (0, -1)
+NORTH = (0, -1)
+SOUTH = (0, 1)
 
 # rewards
 MOUSE = 200
