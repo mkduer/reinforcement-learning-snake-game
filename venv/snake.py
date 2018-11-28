@@ -9,33 +9,37 @@ class Snake:
         self.x, self.y = [], []
         self.head = (0, 0)
         self.tail = (0, 0)
-        self.initialize_positions()
+        self.initialize_positions(-1, -1)
 
-    def initialize_positions(self):
+    def initialize_positions(self, mouse_x, mouse_y):
         """
         Initializes the position of the snake
         """
         self.length = constant.SNAKE_LENGTH
-        self.x = []
-        self.y = []
+
+        # avoid collision with existing mouse
+        if self.x == mouse_x and self.y == mouse_y:
+            self.x, self.y = [constant.SNAKE_X + 1], [constant.SNAKE_Y]
+        else:
+            self.x, self.y = [constant.SNAKE_X], [constant.SNAKE_Y]
 
         # Initial position changes based on initial direction
         if self.direction == constant.EAST:    # East
-            for i in range(self.length, 0, -1):
+            for i in range(self.length - 1, 0, -1):
                 self.x.append(i * constant.TILE)
-                self.y.append(0)
+                self.y.append(constant.SNAKE_Y)
         elif self.direction == constant.WEST:  # West
-            for i in range(0, self.length):
+            for i in range(0, self.length - 1):
                 self.x.append(i * constant.TILE)
-                self.y.append(0)
+                self.y.append(constant.SNAKE_Y)
         elif self.direction == constant.NORTH:  # North
-            for i in range(0, self.length):
+            for i in range(0, self.length - 1):
                 self.y.append(i * constant.TILE)
-                self.x.append(0)
+                self.x.append(constant.SNAKE_X)
         else:                      # South
-            for i in range(self.length, 0, -1):
+            for i in range(self.length - 1, 0, -1):
                 self.y.append(i * constant.TILE)
-                self.x.append(0)
+                self.x.append(constant.SNAKE_X)
 
         self.tail = self.x[-1], self.y[-1]
         self.head = self.x[0], self.y[0]
@@ -49,7 +53,7 @@ class Snake:
         self.x.insert(0, x)
         self.y.insert(0, y)
         self.head = self.x[0], self.y[0]
-        self.length += 1
+        self.length = len(self.x)
 
     def update_tail(self):
         """
@@ -58,7 +62,7 @@ class Snake:
         self.x.pop(-1)
         self.y.pop(-1)
         self.tail = self.x[-1], self.y[-1]
-        self.length -= 1
+        self.length = len(self.x)
 
     def eats_mouse(self, mouse_x: int, mouse_y: int) -> bool:
         """
@@ -68,6 +72,7 @@ class Snake:
         :return: True if mouse was eaten, False otherwise
         """
         if mouse_x == self.x[0] and mouse_y == self.y[0]:
+                self.length = len(self.x)
                 return True
         return False
 

@@ -1,8 +1,13 @@
+# command line default values
+EPISODES = 800
+DELAY = 10
+
 # grid and display measurements
 TILE = 44
 WIDTH = 10
 HEIGHT = 10
 SNAKE_LENGTH = 1
+SNAKE_X, SNAKE_Y = 2 * 44, 2 * 44
 
 # directions
 EAST = (1, 0)
@@ -15,5 +20,3 @@ MOUSE = 200
 WALL = -100
 SNAKE = -100
 EMPTY = -1
-
-EPISODES = 1000
