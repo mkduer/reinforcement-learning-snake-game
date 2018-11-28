@@ -1,6 +1,5 @@
 from random import choice
 import constant
-from collections import OrderedDict
 
 
 class QLearning:
@@ -11,7 +10,7 @@ class QLearning:
 
         # Hyperparameters
         self.learning_rate = 1
-        self.discount_factor = 0.9
+        self.discount_factor = 0.5
         self.reward = 0
 
     def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)) -> {str: float}:
@@ -79,20 +78,6 @@ class QLearning:
         q_current[action] = q_current[action] + self.learning_rate * (self.reward + self.discount_factor * (max_action - q_current[action]))
 
     def display_table(self, ordered: bool):
-        if ordered:
-            od_table = OrderedDict(sorted(self.table.items()))
-            for state in od_table:
-                print(f'{state}: {self.table[state]}')
-        else:
-            for state in self.table:
-                print(f'{state}: {self.table[state]}')
+        for state in self.table:
+            print(f'{state}: {self.table[state]}')
         print('\n')
-
-
-def main():
-    # local, class testing
-    q = QLearning()
-
-
-if __name__ == "__main__":
-    main()

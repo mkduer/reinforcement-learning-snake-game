@@ -13,4 +13,4 @@ SOUTH = (0, -1)
 MOUSE = 20
 WALL = -100
 SNAKE = -100
-EMPTY = 0
+EMPTY = -1

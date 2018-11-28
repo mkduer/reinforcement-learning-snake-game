@@ -80,6 +80,12 @@ class Game:
                 self.q.update_reward('empty')
             self.snake.update_tail()
 
+    def abs_coordinates(self):
+        snake_head = self.snake.head_coordinates()
+        mouse_loc = self.mouse.relative_coordinates(snake_head)
+        tail_loc = self.snake.tail_coordinates()
+        return tail_loc, mouse_loc
+
     def render(self):
         """
         Render the visual components of the game
@@ -118,7 +124,7 @@ class Game:
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
 
-    def ai_play(self, delay: int, total_episodes: int):
+    def ai_train(self, delay: int, total_episodes: int):
         """
         Executes the game play, snake movements, and loops until the game ends.
         Movements are implemented by the AI rather than by a human pressing keys.
@@ -129,14 +135,7 @@ class Game:
         while self._running:
             pygame.event.pump()
 
-            snake_head = self.snake.head_coordinates()
-            mouse_loc = self.mouse.relative_coordinates(snake_head)
-            tail_loc = self.snake.tail_coordinates()
-            # TODO: test print for absolute and relative positions
-            """
-            print(f'head: {snake_head}, tail: {tail_loc}, '
-                  f'mouse abs: {self.mouse.x}, {self.mouse.y}, rel: {mouse_loc}')
-                  """
+            tail_loc, mouse_loc = self.abs_coordinates()
             state = self.q.define_state(tail_loc, mouse_loc)
             action = self.q.select_action(state)
 
@@ -148,11 +147,9 @@ class Game:
                 self.snake.set_north()
             else:        # south
                 self.snake.set_south()
-
             self.move_snake(True, total_episodes)
-            snake_head = self.snake.head_coordinates()
-            mouse_loc = self.mouse.relative_coordinates(snake_head)
-            tail_loc = self.snake.tail_coordinates()
+
+            tail_loc, mouse_loc = self.abs_coordinates()
             next_state = self.q.define_state(tail_loc, mouse_loc)
 
             self.q.update(state, next_state, action)
@@ -162,6 +159,9 @@ class Game:
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
 
+    def ai_test(self):
+        print(f'TESTING')
+
     def next_episode(self, total_episodes: int):
         """
         Sets-up the next episode or completes the final episode
@@ -169,6 +169,7 @@ class Game:
         """
         self.q.display_table(ordered=False)
         if self.episode >= total_episodes:
+            self.ai_test()
             exit(0)
 
         # reset the game specs
@@ -191,11 +192,11 @@ def parse_args():
                                                  'but also available for manual play')
     parser.add_argument('-d', metavar='delay', type=int, nargs='?',
                         help='delays speed of snake (e.g. lower values result in faster snake, '
-                             'higher values result in slower snake', default=50)
+                             'higher values result in slower snake', default=10)
     parser.add_argument('-ai', metavar='player type', type=str, nargs='?',
                         help='y/n where "y" activates AI play, "n" allows for manual play', default='n')
     parser.add_argument('-i', metavar='number of episodes', type=int, nargs='?',
-                        help='number of q-learning episodes', default=1000)
+                        help='number of q-learning episodes', default=10)
 
     # parse arguments
     args = parser.parse_args()
@@ -214,7 +215,8 @@ if __name__ == "__main__":
     snake_game = Game()
     snake_game.pygame_init()
     if ai == 'y':
-        snake_game.ai_play(delayed, total_episode_number)
+        snake_game.ai_train(delayed, total_episode_number)
+        snake_game.ai_test()
     else:
         snake_game.human_play(delayed, total_episode_number)
 
