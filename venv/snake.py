@@ -5,7 +5,7 @@ class Snake:
 
     def __init__(self):
         self.length = constant.SNAKE_LENGTH
-        self.direction = constant.START_DIRECTION
+        self.direction = constant.EAST
         self.x, self.y = [], []
         self.head = (0, 0)
         self.tail = (0, 0)
@@ -39,61 +39,35 @@ class Snake:
 
         self.tail = self.x[-1], self.y[-1]
         self.head = self.x[0], self.y[0]
-        self.length = constant.SNAKE_LENGTH
 
-    def update(self):
+    def update_head(self):
         """
-        Updates snake body based on new movements
+        Increments snake's head
         """
-        # update body
-        for i in range(self.length - 1, 0, -1):
-            self.x[i] = self.x[i - 1]
-            self.y[i] = self.y[i - 1]
-        self.tail = self.x[-1], self.y[-1]
-
-        # update head
-        if self.direction == 0:
-            self.x[0] += constant.TILE
-        if self.direction == 1:
-            self.x[0] -= constant.TILE
-        if self.direction == 2:
-            self.y[0] -= constant.TILE
-        if self.direction == 3:
-            self.y[0] += constant.TILE
+        x = self.x[0] + self.direction[0] * constant.TILE
+        y = self.y[0] + self.direction[1] * constant.TILE
+        self.x.insert(0, x)
+        self.y.insert(0, y)
         self.head = self.x[0], self.y[0]
+        self.length += 1
+
+    def update_tail(self):
+        """
+        Increments snake's tail
+        """
+        self.x.pop(-1)
+        self.y.pop(-1)
+        self.tail = self.x[-1], self.y[-1]
+        self.length -= 1
 
     def eats_mouse(self, mouse_x: int, mouse_y: int) -> bool:
         """
-        If the snake eats the mouse, update its body positions
+        Checks if the snake eats the mouse
         :param mouse_x: mouse's x coordinate
         :param mouse_y: mouse's y coordinate
         :return: True if mouse was eaten, False otherwise
         """
-        for i in range(0, self.length):
-            if mouse_x == self.x[i] and mouse_y == self.y[i]:
-
-                # update tail
-                self.x.append(self.x[-1])
-                self.y.append(self.y[-1])
-                self.tail = self.x[-1], self.y[-1]
-                self.length += 1
-
-                # update the rest of body
-                for j in range(self.length - 2, 0, -1):
-                    self.x[j] = self.x[j - 1]
-                    self.y[j] = self.y[j - 1]
-
-                # update head
-                if self.direction == 0:
-                    self.x[0] += constant.TILE
-                if self.direction == 1:
-                    self.x[0] -= constant.TILE
-                if self.direction == 2:
-                    self.y[0] -= constant.TILE
-                if self.direction == 3:
-                    self.y[0] += constant.TILE
-                self.head = self.x[0], self.y[0]
-
+        if mouse_x == self.x[0] and mouse_y == self.y[0]:
                 return True
         return False
 
@@ -118,29 +92,29 @@ class Snake:
             return True
         return False
 
-    def move_east(self):
+    def set_east(self):
         """
         Snake moves East
         """
-        self.direction = 0
+        self.direction = constant.EAST
 
-    def move_west(self):
+    def set_west(self):
         """
         Snake moves West
         """
-        self.direction = 1
+        self.direction = constant.WEST
 
-    def move_north(self):
+    def set_north(self):
         """
         Snake moves North
         """
-        self.direction = 2
+        self.direction = constant.NORTH
 
-    def move_south(self):
+    def set_south(self):
         """
         Snake moves South
         """
-        self.direction = 3
+        self.direction = constant.SOUTH
 
     def draw(self, surface, image):
         """
@@ -161,7 +135,7 @@ class Snake:
         """
         :return: returns the snake's head coordinates
         """
-        return self.x[0], self.y[0]
+        return self.head
 
     def tail_coordinates(self):
         """
