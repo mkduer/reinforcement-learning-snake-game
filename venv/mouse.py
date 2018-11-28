@@ -23,9 +23,8 @@ class Mouse:
         :param snake_body: snake body's coordinates
         :return: the new x, y coordinates for the mouse
         """
-        # x, y = 5 * 44, 5 * 44  # TODO: test for generating the same mouse coordinates
+        #x, y = 5 * 44, 5 * 44  # TODO: test for generating the same mouse coordinates
 
-        """
         unique = False
         length = len(snake_body[0])
 
@@ -36,7 +35,6 @@ class Mouse:
                 if x == snake_body[0][i] and y == snake_body[1][i]:
                     break
             unique = True
-            """
 
         return x, y
 
