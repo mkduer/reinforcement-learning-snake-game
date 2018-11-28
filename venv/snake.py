@@ -20,15 +20,15 @@ class Snake:
         self.y = []
 
         # Initial position changes based on initial direction
-        if self.direction == 0:    # East
+        if self.direction == constant.EAST:    # East
             for i in range(self.length, 0, -1):
                 self.x.append(i * constant.TILE)
                 self.y.append(0)
-        elif self.direction == 1:  # West
+        elif self.direction == constant.WEST:  # West
             for i in range(0, self.length):
                 self.x.append(i * constant.TILE)
                 self.y.append(0)
-        elif self.direction == 2:  # North
+        elif self.direction == constant.NORTH:  # North
             for i in range(0, self.length):
                 self.y.append(i * constant.TILE)
                 self.x.append(0)

@@ -28,7 +28,7 @@ class Game:
         
         self.episode = 1
 
-    def pygame_init(self):
+    def initialize_pygame(self):
         """
         Initialize pygame along with display and image settings
         """
@@ -124,9 +124,23 @@ class Game:
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
 
+    def set_direction(self, direction: str):
+        """
+        Sets the direction for the snake to take
+        :param direction: specified direction
+        """
+        if direction == 'east':
+            self.snake.set_east()
+        elif direction == 'west':
+            self.snake.set_west()
+        elif direction == 'north':
+            self.snake.set_north()
+        else:        # south
+            self.snake.set_south()
+
     def ai_train(self, delay: int, total_episodes: int):
         """
-        Executes the game play, snake movements, and loops until the game ends.
+        Executes the AI training, looping until the snake is trained the total number of episodes.
         Movements are implemented by the AI rather than by a human pressing keys.
         :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
         (e.g. 1000) result in very slow frames
@@ -139,48 +153,64 @@ class Game:
             state = self.q.define_state(tail_loc, mouse_loc)
             action = self.q.select_action(state)
 
-            if action == 'east':
-                self.snake.set_east()
-            elif action == 'west':
-                self.snake.set_west()
-            elif action == 'north':
-                self.snake.set_north()
-            else:        # south
-                self.snake.set_south()
+            self.set_direction(action)
             self.move_snake(True, total_episodes)
 
             tail_loc, mouse_loc = self.abs_coordinates()
             next_state = self.q.define_state(tail_loc, mouse_loc)
-
             self.q.update(state, next_state, action)
             self.q.reset_reward()
+
             self.render()
 
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
 
-    def ai_test(self):
-        print(f'TESTING')
+    def ai_test(self, delay: int):
+        """
+        Tests the AI on previous training data
+        :param delay: defines the frame delay
+        """
+        caption = 'SNAKE ' + 'FINAL TEST RUN'
+        self.reset_game(caption)
+
+        while self._running:
+            pygame.event.pump()
+
+            tail_loc, mouse_loc = self.abs_coordinates()
+            state = self.q.define_state(tail_loc, mouse_loc)
+            action = self.q.select_action(state)
+
+            self.set_direction(action)
+            self.move_snake(True, 1)
+            self.render()
+
+            time.sleep(float(delay) / 1000.0)
+            self.frames += 1
+
+    def reset_game(self, caption: str):
+        pygame.display.set_caption(caption)
+        self.score = 0
+        self.frames = 0
+        self._running = True
+        self.snake.initialize_positions()
+        self.mouse.x, self.mouse.y = self.mouse.generate_mouse(self.snake.body_position())
 
     def next_episode(self, total_episodes: int):
         """
         Sets-up the next episode or completes the final episode
         :param total_episodes: total number of episodes
         """
-        self.q.display_table(ordered=False)
+        self.q.display_table()
+        print(f'SCORE: {self.score}')
         if self.episode >= total_episodes:
-            self.ai_test()
-            exit(0)
+            return
 
-        # reset the game specs
+        # set new episode
         self.episode += 1
         print(f'NEW GAME, EPISODE {self.episode}')
-        pygame.display.set_caption('SNAKE ' + 'Episode ' + str(self.episode))
-        self.score = 0
-        self.frames = 0
-        self._running = True
-        self.snake.initialize_positions()
-        self.mouse.x, self.mouse.y = self.mouse.generate_mouse(self.snake.body_position())
+        caption = 'SNAKE ' + 'Episode ' + str(self.episode)
+        self.reset_game(caption)
 
 
 def parse_args():
@@ -196,7 +226,7 @@ def parse_args():
     parser.add_argument('-ai', metavar='player type', type=str, nargs='?',
                         help='y/n where "y" activates AI play, "n" allows for manual play', default='n')
     parser.add_argument('-i', metavar='number of episodes', type=int, nargs='?',
-                        help='number of q-learning episodes', default=10)
+                        help='number of q-learning episodes', default=constant.EPISODES)
 
     # parse arguments
     args = parser.parse_args()
@@ -211,13 +241,16 @@ if __name__ == "__main__":
     # parse command line
     delayed, ai, total_episode_number = parse_args()
 
-    # initialize and select game play
-    snake_game = Game()
-    snake_game.pygame_init()
+    # initialize
+    game = Game()
+    game.initialize_pygame()
+
+    # select game play
     if ai == 'y':
-        snake_game.ai_train(delayed, total_episode_number)
-        snake_game.ai_test()
+        game.ai_train(delayed, total_episode_number)
+        print(f'TEST RUN:')
+        game.ai_test(delayed)
     else:
-        snake_game.human_play(delayed, total_episode_number)
+        game.human_play(delayed, total_episode_number)
 
     pygame.quit()
