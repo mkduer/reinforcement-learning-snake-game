@@ -4,13 +4,16 @@ WIDTH = 10
 HEIGHT = 10
 SNAKE_LENGTH = 1
 
+# directions
 EAST = (1, 0)
 WEST = (-1, 0)
 NORTH = (0, 1)
 SOUTH = (0, -1)
 
 # rewards
-MOUSE = 20
+MOUSE = 200
 WALL = -100
 SNAKE = -100
 EMPTY = -1
+
+EPISODES = 1000
