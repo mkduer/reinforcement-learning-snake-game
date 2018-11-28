@@ -1,6 +1,7 @@
 # command line default values
-EPISODES = 800
+EPISODES = 10
 DELAY = 10
+SAVE_EPISODE = 5
 
 # grid and display measurements
 TILE = 44
