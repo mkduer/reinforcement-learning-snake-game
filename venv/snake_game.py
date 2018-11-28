@@ -43,9 +43,11 @@ class Game:
         """
         Print game results and exit the game
         """
-        print('\nGAME OVER! Snake collided with ' + collision_type)
-        print("Score: " + str(self.score))
+        print(f'GAME OVER! Snake collided with {collision_type}')
+        self.snake.update_tail()
         self._running = False
+        # self.q.display_table()  # TODO display table
+        print(f'SCORE: {self.score}, LENGTH: {self.snake.length}')
         self.next_episode(total_episodes)
 
     def move_snake(self, ai_play: bool, total_episodes: int):
@@ -188,12 +190,14 @@ class Game:
             time.sleep(float(delay) / 1000.0)
             self.frames += 1
 
+        print(f'FINAL SCORE: {self.score}')
+
     def reset_game(self, caption: str):
         pygame.display.set_caption(caption)
         self.score = 0
         self.frames = 0
         self._running = True
-        self.snake.initialize_positions()
+        self.snake.initialize_positions(self.mouse.x, self.mouse.y)
         self.mouse.x, self.mouse.y = self.mouse.generate_mouse(self.snake.body_position())
 
     def next_episode(self, total_episodes: int):
@@ -201,14 +205,12 @@ class Game:
         Sets-up the next episode or completes the final episode
         :param total_episodes: total number of episodes
         """
-        self.q.display_table()
-        print(f'SCORE: {self.score}')
         if self.episode >= total_episodes:
             return
 
         # set new episode
         self.episode += 1
-        print(f'NEW GAME, EPISODE {self.episode}')
+        print(f'\nNEW GAME, EPISODE {self.episode}')
         caption = 'SNAKE ' + 'Episode ' + str(self.episode)
         self.reset_game(caption)
 
@@ -222,7 +224,7 @@ def parse_args():
                                                  'but also available for manual play')
     parser.add_argument('-d', metavar='delay', type=int, nargs='?',
                         help='delays speed of snake (e.g. lower values result in faster snake, '
-                             'higher values result in slower snake', default=10)
+                             'higher values result in slower snake', default=constant.DELAY)
     parser.add_argument('-ai', metavar='player type', type=str, nargs='?',
                         help='y/n where "y" activates AI play, "n" allows for manual play', default='n')
     parser.add_argument('-i', metavar='number of episodes', type=int, nargs='?',
