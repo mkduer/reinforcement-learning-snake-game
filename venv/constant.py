@@ -2,7 +2,7 @@ from os import getcwd
 
 # command line default values
 EPISODES = 10
-DELAY = 10
+DELAY = 50
 SAVE_EPISODE = 5
 
 # external files
