@@ -123,7 +123,6 @@ class QLearning:
         if os.path.exists(path):
             with open(path) as f:
                 self.table = load(f)
-                print(f'LOADED table: \n{self.table}')
                 f.close()
                 return constant.RESUME_EPISODE + 1
         return -1
