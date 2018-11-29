@@ -4,6 +4,12 @@ DELAY = 200
 SAVE_EPISODE = 5
 HEADER = "Episode Number,Number of Steps, Score, Collision type \n"
 
+# external files
+DELETE_DIR = True
+RESUME_FILE = False
+RESUME_EPISODE = 10
+JSON_DIR = './json/'
+
 # grid and display measurements
 TILE = 44
 WIDTH = 10
@@ -21,4 +27,4 @@ SOUTH = (0, 1)
 MOUSE = 200
 WALL = -100
 SNAKE = -100
-EMPTY = -1
+EMPTY = -10
