@@ -247,11 +247,11 @@ class Game:
             name_check = self.data_out_filename + str(training_no) + ".csv"
             training_no += 1
         out_file = open(name_check, "w")
-       	out_file.write (constant.HEADER)
+        out_file.write (constant.HEADER)
         for i in range (0,len(self.data_list)):
             out_str = str(i + 1)
             for j in range (0, len(self.data_list[i])):
-        	    out_str = out_str + "," + str(self.data_list[i][j])
+                out_str = out_str + "," + str(self.data_list[i][j])
             out_file.write(out_str + "\n")
 
 def parse_args():
