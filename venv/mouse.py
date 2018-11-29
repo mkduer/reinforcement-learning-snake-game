@@ -7,7 +7,9 @@ class Mouse:
     def __init__(self, width, height, snake_body: ([int], [int])):
         self.grid_width = width
         self.grid_height = height
-        self.x, self.y = self.generate_mouse(snake_body)
+        self.x = -1
+        self.y = -1
+        self.generate_mouse(snake_body)
 
     def draw(self, surface, image):
         """
@@ -21,7 +23,6 @@ class Mouse:
         """
         Generates a mouse within the grid dimensions so it does not populate inside the snake
         :param snake_body: snake body's coordinates
-        :return: the new x, y coordinates for the mouse
         """
         unique = False
         length = len(snake_body[0])
@@ -34,7 +35,8 @@ class Mouse:
                     break
             unique = True
 
-        return x, y
+        self.x = x
+        self.y = y
 
     def relative_coordinates(self, snake_head: (int, int)) -> (int, int):
         """

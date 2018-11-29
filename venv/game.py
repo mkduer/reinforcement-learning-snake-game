@@ -76,7 +76,7 @@ class Game:
 
         # if snake eats mouse
         if self.snake.eats_mouse(self.mouse.x, self.mouse.y):
-            self.mouse.x, self.mouse.y = self.mouse.generate_mouse(self.snake.body_position())
+            self.mouse.generate_mouse(self.snake.body_position())
             self.score += 1
             if ai_play:
                 self.q.update_reward('mouse')
@@ -224,7 +224,7 @@ class Game:
         self.frames = 0
         self._running = True
         self.snake.initialize_positions(self.mouse.x, self.mouse.y)
-        self.mouse.x, self.mouse.y = self.mouse.generate_mouse(self.snake.body_position())
+        self.mouse.generate_mouse(self.snake.body_position())
 
     def next_episode(self, total_episodes: int):
         """
