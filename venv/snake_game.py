@@ -1,6 +1,8 @@
 import pygame
 import argparse
 from time import sleep
+import os
+import datetime as dt
 
 from mouse import Mouse
 from snake import Snake
@@ -11,7 +13,8 @@ import constant
 class Game:
 
     def __init__(self):
-
+        self.data_out_filename = str(os.getcwd()) + "/data_output" + str(dt.date.today()) + "r"
+        self.data_list = []
         self.window_width = constant.WIDTH * constant.TILE
         self.window_height = constant.HEIGHT * constant.TILE
         self.score = 0
@@ -47,6 +50,8 @@ class Game:
         self._running = False
         if self.score > self.max_score:
             self.max_score = self.score
+        episode_data = [self.frames, self.score, collision_type]
+        self.data_list.append(episode_data)
         self.display(collision_type)
         self.next_episode(total_episodes)
 
@@ -215,6 +220,8 @@ class Game:
         :param total_episodes: total number of episodes
         """
         if self.episode >= total_episodes:
+            print (str("final score: ") + str(self.max_score)) 
+            self.write_data()
             return
 
         # set new episode
@@ -222,7 +229,20 @@ class Game:
         print(f'\nNEW GAME, EPISODE {self.episode}')
         caption = 'SNAKE ' + 'Episode ' + str(self.episode)
         self.reset_game(caption)
-
+        
+    def write_data(self):
+        name_check = self.data_out_filename + "1.csv"
+        training_no = 1
+        while (os.path.isfile(name_check)):
+            name_check = self.data_out_filename + str(training_no) + ".csv"
+            training_no += 1
+        out_file = open(name_check, "w")
+       	out_file.write (constant.HEADER)
+        for i in range (0,len(self.data_list)):
+            out_str = str(i + 1)
+            for j in range (0, len(self.data_list[i])):
+        	    out_str = out_str + "," + str(self.data_list[i][j])
+            out_file.write(out_str + "\n")
 
 def parse_args():
     """
