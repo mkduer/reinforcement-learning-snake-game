@@ -1,14 +1,14 @@
 from os import getcwd
 
 # command line default values
-EPISODES = 50000
+EPISODES = 5
 DELAY = 0
+SAVE_EPISODE = 1
 
 # external files
-DELETE_JSON = True
-SAVE_EPISODE = 10000
-RESUME_FILE = False
-RESUME_EPISODE = 10
+DELETE_JSON = False
+RESUME = True
+RESUME_EPISODE = 50000
 JSON_DIR = str(getcwd()) + '/json/'
 DATA_DIR = str(getcwd()) + '/measurements/'
 
@@ -17,7 +17,7 @@ TILE = 44
 WIDTH = 8
 HEIGHT = 8
 SNAKE_LENGTH = 1
-SNAKE_X, SNAKE_Y = 2 * 44, 2 * 44
+SNAKE_X, SNAKE_Y = 1 * 44, 1 * 44
 
 # directions
 EAST = (1, 0)
