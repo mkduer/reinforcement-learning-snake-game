@@ -2,7 +2,6 @@ import pygame
 import argparse
 from time import sleep
 import os
-import datetime as dt
 
 from mouse import Mouse
 from snake import Snake
@@ -13,19 +12,20 @@ import constant
 class Game:
 
     def __init__(self):
-        self.data_out_filename = str(os.getcwd()) + "/data_output" + str(dt.date.today()) + "r"
-        self.data_list = []
         self.window_width = constant.WIDTH * constant.TILE
         self.window_height = constant.HEIGHT * constant.TILE
-        self.score = 0
-        self.max_score = 0
-        self.frames = 0
-        self.episode = 1
 
         self._running = True
         self._display = None
         self._snake = None
         self._mouse = None
+
+        self.training_session = 1
+        self.episode = 1
+        self.score = 0
+        self.max_score = 0
+        self.frames = 0
+        self.game_stats = []
 
         self.snake = Snake()
         self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
@@ -48,10 +48,12 @@ class Game:
         """
         self.snake.update_tail()
         self._running = False
+
         if self.score > self.max_score:
             self.max_score = self.score
         episode_data = [self.frames, self.score, collision_type]
-        self.data_list.append(episode_data)
+        self.game_stats.append(episode_data)
+
         self.display(collision_type)
         self.next_episode(total_episodes)
 
@@ -61,7 +63,7 @@ class Game:
         :param collision_type: what type of collision ended the game
         """
         if self.episode % constant.SAVE_EPISODE == 0:
-            #self.q.display_table()  # optional
+            #self.q.display_table()  # optional TODO: delete at the end of the project
             self.q.save_table(self.episode, clear_dir=constant.DELETE_DIR)
         print(f'GAME OVER! Snake collided with {collision_type}')
         print(f'SCORE: {self.score}')
@@ -214,7 +216,7 @@ class Game:
             sleep(float(delay) / 1000)
             self.frames += 1
 
-        print(f'FINAL SCORE: {self.score}, FINAL MAX SCORE: {self.max_score}')
+        print(f'(TEST RUN) FINAL SCORE: {self.score}, FINAL MAX SCORE: {self.max_score}')
 
     def reset_game(self, caption: str):
         pygame.display.set_caption(caption)
@@ -230,7 +232,6 @@ class Game:
         :param total_episodes: total number of episodes
         """
         if self.episode >= total_episodes:
-            print (str("final score: ") + str(self.max_score)) 
             self.write_data()
             return
 
@@ -241,18 +242,24 @@ class Game:
         self.reset_game(caption)
         
     def write_data(self):
-        name_check = self.data_out_filename + "1.csv"
-        training_no = 1
-        while (os.path.isfile(name_check)):
-            name_check = self.data_out_filename + str(training_no) + ".csv"
-            training_no += 1
-        out_file = open(name_check, "w")
-        out_file.write (constant.HEADER)
-        for i in range (0,len(self.data_list)):
-            out_str = str(i + 1)
-            for j in range (0, len(self.data_list[i])):
-                out_str = out_str + "," + str(self.data_list[i][j])
-            out_file.write(out_str + "\n")
+        path = constant.DATA_DIR
+        header = 'Episode, Steps, Score, Collision\n'
+        filename = path + 'data' + str(self.training_session) + '.csv'
+
+        # create directory if it doesn't exist
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        # write data to csv file(s)
+        with open(filename, 'w') as outfile:
+            outfile.write(header)
+
+            for i in range(0, len(self.game_stats)):
+                out_str = str(i + 1)
+                for j in range(0, len(self.game_stats[i])):
+                    out_str = out_str + ',' + str(self.game_stats[i][j])
+                outfile.write(out_str + '\n')
+
 
 def parse_args():
     """
@@ -289,7 +296,7 @@ if __name__ == "__main__":
     # select game play
     if ai == 'y':
         game.ai_train(delayed, total_episode_number, constant.RESUME_FILE)
-        print(f'TEST RUN:')
+        print(f'\nTEST RUN:')
         game.ai_test(delayed)
     else:
         game.human_play(delayed, total_episode_number)
