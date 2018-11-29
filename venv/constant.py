@@ -1,14 +1,16 @@
+from os import getcwd
+
 # command line default values
 EPISODES = 10
 DELAY = 10
 SAVE_EPISODE = 5
-HEADER = "Episode Number,Number of Steps, Score, Collision type \n"
 
 # external files
 DELETE_DIR = True
 RESUME_FILE = False
 RESUME_EPISODE = 10
-JSON_DIR = './json/'
+JSON_DIR = str(getcwd()) + '/json/'
+DATA_DIR = str(getcwd()) + '/measurements/'
 
 # grid and display measurements
 TILE = 44
