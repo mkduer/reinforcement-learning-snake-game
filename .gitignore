@@ -123,4 +123,5 @@ venv.bak/
 *.xls
 *.csv
 *.swp
+*.json
 
