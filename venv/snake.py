@@ -150,3 +150,6 @@ class Snake:
         new_x = self.tail[0] - self.head[0]
         new_y = self.tail[1] - self.head[1]
         return new_x, new_y
+
+    def current_direction(self):
+        return self.direction

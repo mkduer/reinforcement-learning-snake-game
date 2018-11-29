@@ -20,7 +20,6 @@ class Game:
         self._snake = None
         self._mouse = None
 
-        self.training_session = 1
         self.episode = 1
         self.score = 0
         self.max_score = 0
@@ -64,7 +63,7 @@ class Game:
         """
         if self.episode % constant.SAVE_EPISODE == 0:
             #self.q.display_table()  # optional TODO: delete at the end of the project
-            self.q.save_table(self.episode, clear_dir=constant.DELETE_DIR)
+            self.q.save_table(self.episode, clear_dir=constant.DELETE_JSON)
         print(f'GAME OVER! Snake collided with {collision_type}')
         print(f'SCORE: {self.score}')
 
@@ -178,14 +177,16 @@ class Game:
             pygame.event.pump()
 
             tail_loc, mouse_loc = self.abs_coordinates()
-            state = self.q.define_state(tail_loc, mouse_loc)
+            snake_direction = self.snake.current_direction()
+            state = self.q.define_state(tail_loc, mouse_loc, snake_direction)
             action = self.q.select_action(state)
 
             self.set_direction(action)
             self.move_snake(True, total_episodes)
 
             tail_loc, mouse_loc = self.abs_coordinates()
-            next_state = self.q.define_state(tail_loc, mouse_loc)
+            snake_direction = self.snake.current_direction()
+            next_state = self.q.define_state(tail_loc, mouse_loc, snake_direction)
             self.q.update(state, next_state, action)
             self.q.reset_reward()
 
@@ -206,7 +207,8 @@ class Game:
             pygame.event.pump()
 
             tail_loc, mouse_loc = self.abs_coordinates()
-            state = self.q.define_state(tail_loc, mouse_loc)
+            snake_direction = self.snake.current_direction()
+            state = self.q.define_state(tail_loc, mouse_loc, snake_direction)
             action = self.q.select_action(state)
 
             self.set_direction(action)
@@ -244,7 +246,7 @@ class Game:
     def write_data(self):
         path = constant.DATA_DIR
         header = 'Episode, Steps, Score, Collision\n'
-        filename = path + 'data' + str(self.training_session) + '.csv'
+        filename = path + 'data.csv'
 
         # create directory if it doesn't exist
         if not os.path.exists(path):
