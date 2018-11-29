@@ -2,6 +2,7 @@
 EPISODES = 10
 DELAY = 200
 SAVE_EPISODE = 5
+HEADER = "Episode Number,Number of Steps, Score, Collision type \n"
 
 # grid and display measurements
 TILE = 44
