@@ -14,10 +14,10 @@ class QLearning:
 
         # Hyperparameters
         self.learning_rate = 1
-        self.discount_factor = 0.9
+        self.discount_factor = 0.5
         self.reward = 0
 
-    def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)) -> {str: float}:
+    def define_state(self, tail_loc: (int, int), mouse_loc: (int, int), direction: (int, int)) -> {str: float}:
         """
         Creates state based on the snake's origin head relative to its tail and relative to the mouse
         :param tail_loc: tail coordinates
@@ -26,7 +26,7 @@ class QLearning:
         """
         tail_loc = int(tail_loc[0]/44), int(tail_loc[1]/44)
         mouse_loc = int(mouse_loc[0]/44), int(mouse_loc[1]/44)
-        key = str(tail_loc) + str(mouse_loc)
+        key = str(tail_loc) + str(mouse_loc) + str(direction)
 
         # if Q value does not exist
         if key not in self.table:
