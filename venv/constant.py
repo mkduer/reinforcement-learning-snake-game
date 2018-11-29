@@ -1,6 +1,6 @@
 # command line default values
 EPISODES = 10
-DELAY = 200
+DELAY = 10
 SAVE_EPISODE = 5
 HEADER = "Episode Number,Number of Steps, Score, Collision type \n"
 

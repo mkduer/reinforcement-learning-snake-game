@@ -105,7 +105,7 @@ class QLearning:
 
         # create directory if it doesn't exist
         if not os.path.exists(path):
-            os.mkpath(path)
+            os.mkdir(path)
 
         # save tables to external files
         outfile = path + 'episode' + str(episode) + '.json'
