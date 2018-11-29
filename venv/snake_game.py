@@ -62,7 +62,7 @@ class Game:
         """
         if self.episode % constant.SAVE_EPISODE == 0:
             #self.q.display_table()  # optional
-            self.q.save_table(self.episode, clear_dir=True)
+            self.q.save_table(self.episode, clear_dir=constant.DELETE_DIR)
         print(f'GAME OVER! Snake collided with {collision_type}')
         print(f'SCORE: {self.score}')
 
@@ -154,14 +154,24 @@ class Game:
         else:        # south
             self.snake.set_south()
 
-    def ai_train(self, delay: int, total_episodes: int):
+    def ai_train(self, delay: int, total_episodes: int, saved_table: bool):
         """
         Executes the AI training, looping until the snake is trained the total number of episodes.
         Movements are implemented by the AI rather than by a human pressing keys.
         :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
         (e.g. 1000) result in very slow frames
         :param total_episodes: total number of episodes to run the game
+        :param saved_table: if True, start training from externally saved table's next episode, if False,
+        initial episode is 1
         """
+
+        # If resuming from a saved table state, load the state and start from the loaded
+        # state's NEXT episode
+        if saved_table:
+            filename = 'episode' + str(constant.RESUME_EPISODE) + '.json'
+            self.episode = self.q.load_table(filename)
+            exit(0)  # TODO delete
+
         while self._running:
             pygame.event.pump()
 
@@ -278,7 +288,7 @@ if __name__ == "__main__":
 
     # select game play
     if ai == 'y':
-        game.ai_train(delayed, total_episode_number)
+        game.ai_train(delayed, total_episode_number, constant.RESUME_FILE)
         print(f'TEST RUN:')
         game.ai_test(delayed)
     else:

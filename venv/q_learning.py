@@ -1,7 +1,6 @@
 from random import choice
 import os
 from shutil import rmtree
-from time import sleep
 from json import dump, load
 import constant
 
@@ -15,7 +14,7 @@ class QLearning:
 
         # Hyperparameters
         self.learning_rate = 1
-        self.discount_factor = 0.5
+        self.discount_factor = 0.9
         self.reward = 0
 
     def define_state(self, tail_loc: (int, int), mouse_loc: (int, int)) -> {str: float}:
@@ -98,7 +97,7 @@ class QLearning:
         :param episode: episode number
         :param clear_dir: if True, the directory and its contents will be removed, if False, nothing is explicitly removed
         """
-        path = './json/'
+        path = constant.JSON_DIR
 
         # clear directory if specified by function call
         if clear_dir and episode == 1 and os.path.exists(path):
@@ -113,3 +112,18 @@ class QLearning:
         with open(outfile, 'w') as f:
             dump(self.table, f, indent=2)
             f.close()
+
+    def load_table(self, filename) -> int:
+        """
+        Loads existing file as the current table state and returns the proceeding episode number
+        :param filename: the filename to load data from
+        :return: the next episode following this table's state or -1 if the file does not exist
+        """
+        path = constant.JSON_DIR + filename
+        if os.path.exists(path):
+            with open(path) as f:
+                self.table = load(f)
+                print(f'LOADED table: \n{self.table}')
+                f.close()
+                return constant.RESUME_EPISODE + 1
+        return -1
