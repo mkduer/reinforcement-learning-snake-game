@@ -2,6 +2,7 @@ import pygame
 import argparse
 from time import sleep
 import os
+import csv
 
 from mouse import Mouse
 from snake import Snake
@@ -50,8 +51,7 @@ class Game:
 
         if self.score > self.max_score:
             self.max_score = self.score
-        episode_data = [self.frames, self.score, collision_type]
-        self.game_stats.append(episode_data)
+        self.game_stats.append([self.frames, self.score])
 
         self.display(collision_type)
         self.next_episode(total_episodes)
@@ -246,7 +246,7 @@ class Game:
         
     def write_data(self):
         path = constant.DATA_DIR
-        header = 'Episode, Steps, Score, Collision\n'
+        header = ['Steps', 'Score']
         filename = path + 'data.csv'
 
         # create directory if it doesn't exist
@@ -254,14 +254,10 @@ class Game:
             os.mkdir(path)
 
         # write data to csv file(s)
-        with open(filename, 'w') as outfile:
-            outfile.write(header)
-
-            for i in range(0, len(self.game_stats)):
-                out_str = str(i + 1)
-                for j in range(0, len(self.game_stats[i])):
-                    out_str = out_str + ',' + str(self.game_stats[i][j])
-                outfile.write(out_str + '\n')
+        with open(filename, 'w', newline='') as outfile:
+            w = csv.writer(outfile)
+            w.writerow(header)
+            w.writerows(self.game_stats)
 
 
 def parse_args():
