@@ -11,12 +11,16 @@ SAVE_EPISODE = 1000000
 
 # delete file settings
 DELETE_JSON = True
-DELETE_GRAPHS = True
+DELETE_GRAPHS = False
 
 # external directories
 JSON_DIR = str(getcwd()) + '/json/'
 DATA_DIR = str(getcwd()) + '/measurements/'
 GRAPH_DIR = str(getcwd()) + '/graphs/'
+
+# Hyperparameters
+ETA = 0.1
+DISCOUNT = 0.9
 
 # grid and display measurements
 TILE = 44

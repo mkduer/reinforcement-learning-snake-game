@@ -15,11 +15,13 @@ def plot_game_stats(filename: str):
 
     if 'Steps' in df:
         steps = df['Steps']
-        line_plot(steps, save_img='steps', plot_title='Training Steps', x_label='Episodes', y_label='Steps')
+        img = 'eta' + str(constant.ETA) + '_steps'
+        line_plot(steps, save_img=img, plot_title='Training Steps', x_label='Episodes', y_label='Steps')
 
     if 'Score' in df:
         score = df['Score']
-        scatterplot(score, save_img='score', plot_title='Training Scores', x_label='Episodes', y_label='Scores')
+        img = 'eta' + str(constant.ETA) + '_score'
+        scatterplot(score, save_img=img, plot_title='Training Scores', x_label='Episodes', y_label='Scores')
 
 
 def scatterplot(df, save_img: str, plot_title: str, x_label: str, y_label: str):

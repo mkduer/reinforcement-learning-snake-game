@@ -13,8 +13,8 @@ class QLearning:
         self.all_actions = ['north', 'east', 'south', 'west']
 
         # Hyperparameters
-        self.learning_rate = .1
-        self.discount_factor = 0.9
+        self.learning_rate = constant.ETA
+        self.discount_factor = constant.DISCOUNT
         self.reward = 0
 
     def define_state(self, tail_loc: (int, int), mouse_loc: (int, int), direction: (int, int)) -> {str: float}:
