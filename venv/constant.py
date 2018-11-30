@@ -4,6 +4,10 @@ from os import getcwd
 EPISODES = 5000
 DELAY = 0
 
+# Hyperparameters
+ETA = 0.0001
+DISCOUNT = 0.9
+
 # resume/save game settings
 RESUME = False
 RESUME_EPISODE = 1200000
@@ -17,10 +21,6 @@ DELETE_GRAPHS = False
 JSON_DIR = str(getcwd()) + '/json/'
 DATA_DIR = str(getcwd()) + '/measurements/'
 GRAPH_DIR = str(getcwd()) + '/graphs/'
-
-# Hyperparameters
-ETA = 0.1
-DISCOUNT = 0.9
 
 # grid and display measurements
 TILE = 44

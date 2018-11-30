@@ -247,7 +247,7 @@ class Game:
     def write_data(self):
         path = constant.DATA_DIR
         header = ['Steps', 'Score']
-        filename = path + 'data.csv'
+        filename = path + 'eta' + str(constant.ETA) + '_data.csv'
 
         # create directory if it doesn't exist
         if not os.path.exists(path):
