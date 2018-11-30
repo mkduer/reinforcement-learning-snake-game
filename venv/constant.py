@@ -1,11 +1,11 @@
 from os import getcwd
 
 # command line default values
-EPISODES = 5000
+EPISODES = 20000
 DELAY = 0
 
 # Hyperparameters
-ETA = 0.0001
+ETA = 0.1
 DISCOUNT = 0.9
 
 # resume/save game settings
