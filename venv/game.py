@@ -26,6 +26,7 @@ class Game:
         self.max_score = 0
         self.frames = 0
         self.game_stats = []
+        self.collision_stats = []
 
         self.snake = Snake()
         self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
@@ -52,7 +53,10 @@ class Game:
         if self.score > self.max_score:
             self.max_score = self.score
         self.game_stats.append([self.frames, self.score])
-
+        if (collision_type == 'the wall'):
+            self.collision_stats.append([1])
+        else:
+            self.collision_stats.append([-1])
         self.display(collision_type)
         self.next_episode(total_episodes)
 
@@ -243,21 +247,78 @@ class Game:
         print(f'\nNEW GAME, EPISODE {self.episode}')
         caption = 'SNAKE ' + 'Episode ' + str(self.episode)
         self.reset_game(caption)
-        
+
+    #collect parameters data
+    def param_data(self):
+
+        return temp_parameter_data
+      
     def write_data(self):
+        """
+        Writes the data from the current training session to a file. training sessions 
+        also be appended to previous files. Function also creates directories for files 
+        if not found previously 
+        """
         path = constant.DATA_DIR
         header = ['Steps', 'Score']
+        param_header = ['Parameters', 'Values']
         filename = path + 'eta' + str(constant.ETA) + '_data.csv'
-
+        param_filename = path + 'eta' + str(constant.ETA) + 'params' + '_data.csv'
+        collisions_filename = path + 'eta' + str(constant.ETA) + 'collisions' + '_data.csv'
         # create directory if it doesn't exist
         if not os.path.exists(path):
             os.mkdir(path)
 
-        # write data to csv file(s)
-        with open(filename, 'w', newline='') as outfile:
-            w = csv.writer(outfile)
-            w.writerow(header)
-            w.writerows(self.game_stats)
+        #collect parameters data
+        '''
+		sorry for having this all in the function. I tried to 
+		write another function to take care of it but it didn't
+		get recognized
+		'''
+        parameter_data = []
+        parameter_data.append(['tile size', constant.TILE])
+        parameter_data.append(['height', constant.HEIGHT]) 
+        parameter_data.append(['width', constant.WIDTH])
+        parameter_data.append(['learning rate', constant.ETA])
+        parameter_data.append(['discount', constant.DISCOUNT])
+        #parameter_data.append(['EPSILON, constant.EPSILON])
+        parameter_data.append(['mouse reward', constant.MOUSE])
+        parameter_data.append(['wall reward', constant.WALL])
+        parameter_data.append(['self-collision reward', constant.SNAKE])
+        parameter_data.append(['empty tile reward', constant.EMPTY])
+        parameter_data.append(['episode number', constant.EPISODES])
+        
+        #write parameters file
+        with open(param_filename, 'w', newline='') as param_outfile:
+            pw = csv.writer(param_outfile)
+            pw.writerow(param_header)
+            pw.writerows(parameter_data)
+
+        param_outfile.close()
+		
+		#write out collision stats
+        with open(collisions_filename, 'w', newline='') as collisions_outfile:
+            cw = csv.writer(collisions_outfile)
+            cw.writerow(['collisions type'])
+            cw.writerows(self.collision_stats)
+            
+        collisions_outfile.close()         
+		#check if data is to be appended to file and if file exists, appends to file
+        if ((constant.RESUME == True) and (os.path.isfile(filename)== True)):
+            with open(filename, 'a', newline='') as outfile:
+                w = csv.writer(outfile)
+                w.writerows(self.game_stats)
+        else:
+        	# write data to csv file(s)
+            with open(filename, 'w', newline='') as outfile:
+            	w = csv.writer(outfile)
+            	w.writerow(header)
+            	w.writerows(self.game_stats)
+            	
+        outfile.close()
+        
+        #write collisions data file
+        
 
 
 def parse_args():
