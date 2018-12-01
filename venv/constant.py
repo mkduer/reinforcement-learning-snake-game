@@ -1,13 +1,18 @@
 from os import getcwd
 
 # command line default values
+<<<<<<< HEAD
 EPISODES = 20000
 DELAY = 0
+=======
+EPISODES = 10
+DELAY = 100
+>>>>>>> d96af58cc1485a0df8dac9878c8266198ca43317
 
 # Hyperparameters
 ETA = 0.001
 DISCOUNT = 0.9
-EPSILON = 1
+EPSILON = .5
 
 # resume/save game settings
 RESUME = False

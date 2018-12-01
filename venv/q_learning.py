@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, random
 import os
 from shutil import rmtree
 from json import dump, load
@@ -23,6 +23,7 @@ class QLearning:
         Creates state based on the snake's origin head relative to its tail and relative to the mouse
         :param tail_loc: tail coordinates
         :param mouse_loc: mouse coordinates
+        :param direction: the direction the snake is facing
         :return: the state key
         """
         tail_loc = int(tail_loc[0]/44), int(tail_loc[1]/44)
@@ -42,6 +43,9 @@ class QLearning:
         :return: the selected action
         """
         action = choice(self.all_actions)
+        if random() < self.epsilon:
+            return action
+
         max_val = state[action]
 
         for a in state:
@@ -76,11 +80,13 @@ class QLearning:
         Implements the Q learning algorithm with temporal difference and set hyperparameters
         :param q_current: the current state
         :param q_next: the next state
-        :param action: the action that was chosen
+        :param action: the action that was taken
         """
         prediction = self.select_action(q_next)
-        max_action = q_next[prediction]
-        q_current[action] = q_current[action] + self.learning_rate * (self.reward + self.discount_factor * (max_action - q_current[action]))
+        next_action = q_next[prediction]
+
+        q_current[action] = q_current[action] + self.learning_rate * (self.reward + self.discount_factor *
+                                                                      (next_action - q_current[action]))
 
     def display_table(self):
         """
