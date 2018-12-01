@@ -271,10 +271,10 @@ class Game:
 
         #collect parameters data
         '''
-		sorry for having this all in the function. I tried to 
-		write another function to take care of it but it didn't
-		get recognized
-		'''
+        sorry for having this all in the function. I tried to 
+        write another function to take care of it but it didn't
+        get recognized
+        '''
         parameter_data = []
         parameter_data.append(['tile size', constant.TILE])
         parameter_data.append(['height', constant.HEIGHT]) 
@@ -295,26 +295,26 @@ class Game:
             pw.writerows(parameter_data)
 
         param_outfile.close()
-		
-		#write out collision stats
+
+        #write out collision stats
         with open(collisions_filename, 'w', newline='') as collisions_outfile:
             cw = csv.writer(collisions_outfile)
             cw.writerow(['collisions type'])
             cw.writerows(self.collision_stats)
             
         collisions_outfile.close()         
-		#check if data is to be appended to file and if file exists, appends to file
+        #check if data is to be appended to file and if file exists, appends to file
         if ((constant.RESUME == True) and (os.path.isfile(filename)== True)):
             with open(filename, 'a', newline='') as outfile:
                 w = csv.writer(outfile)
                 w.writerows(self.game_stats)
         else:
-        	# write data to csv file(s)
+            # write data to csv file(s)
             with open(filename, 'w', newline='') as outfile:
-            	w = csv.writer(outfile)
-            	w.writerow(header)
-            	w.writerows(self.game_stats)
-            	
+                w = csv.writer(outfile)
+                w.writerow(header)
+                w.writerows(self.game_stats)
+
         outfile.close()
         
         #write collisions data file

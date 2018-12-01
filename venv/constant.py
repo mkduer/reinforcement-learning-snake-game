@@ -1,7 +1,7 @@
 from os import getcwd
 
 # command line default values
-EPISODES = 100
+EPISODES = 20000
 DELAY = 0
 
 # Hyperparameters
