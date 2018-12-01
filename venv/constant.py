@@ -1,11 +1,11 @@
 from os import getcwd
 
 # command line default values
-EPISODES = 20000
+EPISODES = 100
 DELAY = 0
 
 # Hyperparameters
-ETA = 0.1
+ETA = 0.001
 DISCOUNT = 0.9
 
 # resume/save game settings
@@ -16,6 +16,7 @@ SAVE_EPISODE = 1000000
 # delete file settings
 DELETE_JSON = True
 DELETE_GRAPHS = False
+
 
 # external directories
 JSON_DIR = str(getcwd()) + '/json/'
