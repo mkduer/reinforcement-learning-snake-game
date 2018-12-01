@@ -25,6 +25,13 @@ def plot_game_stats(filename: str):
         title = 'Training Scores for η = ' + str(constant.ETA)
         scatterplot(score, save_img=img, plot_title=title, x_label='Episodes', y_label='Scores')
 
+    # TODO: pick an appropriate graph to visualize collisions
+    if 'Collisions' in df:
+        collisions = df['Collisions']
+        img = 'eta' + str(constant.ETA) + '_collisions'
+        title = 'Training Collisions for η = ' + str(constant.ETA)
+        scatterplot(collisions, save_img=img, plot_title=title, x_label='Episodes', y_label='Collisions')
+
 
 def scatterplot(df, save_img: str, plot_title: str, x_label: str, y_label: str):
     """
