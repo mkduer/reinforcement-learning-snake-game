@@ -15,6 +15,7 @@ class QLearning:
         # Hyperparameters
         self.learning_rate = constant.ETA
         self.discount_factor = constant.DISCOUNT
+        self.epsilon = constant.EPSILON
         self.reward = 0
 
     def define_state(self, tail_loc: (int, int), mouse_loc: (int, int), direction: (int, int)) -> {str: float}:

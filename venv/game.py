@@ -26,7 +26,7 @@ class Game:
         self.max_score = 0
         self.frames = 0
         self.game_stats = []
-        self.collision_stats = []
+        self.specs = []
 
         self.snake = Snake()
         self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
@@ -47,16 +47,16 @@ class Game:
         """
         Print game results and exit the game
         """
+        collision_value = -1  # represents body collision
+        if collision_type == 'the wall':
+            collision_value = 1
+
         self.snake.update_tail()
         self._running = False
 
         if self.score > self.max_score:
             self.max_score = self.score
-        self.game_stats.append([self.frames, self.score])
-        if (collision_type == 'the wall'):
-            self.collision_stats.append([1])
-        else:
-            self.collision_stats.append([-1])
+        self.game_stats.append([self.frames, self.score, collision_value])
         self.display(collision_type)
         self.next_episode(total_episodes)
 
@@ -239,7 +239,7 @@ class Game:
         :param total_episodes: total number of episodes
         """
         if self.episode >= total_episodes:
-            self.write_data()
+            self.prep_data()
             return
 
         # set new episode
@@ -248,77 +248,63 @@ class Game:
         caption = 'SNAKE ' + 'Episode ' + str(self.episode)
         self.reset_game(caption)
 
-    #collect parameters data
-    def param_data(self):
+    def prep_data(self):
+        self.specs = []
 
-        return temp_parameter_data
-      
-    def write_data(self):
+        stats_file = 'eta' + str(constant.ETA) + '_data.csv'
+        header = ['Steps', 'Score', 'Collisions']
+        self.write_data(stats_file, header, self.game_stats)
+
+        specs_file = 'eta' + str(constant.ETA) + '_specs.csv'
+        header = ['Parameters', 'Values']
+        self.specs.append(['episode number', constant.EPISODES])
+        self.specs.append(['height', constant.HEIGHT])
+        self.specs.append(['width', constant.WIDTH])
+        self.specs.append(['learning rate', constant.ETA])
+        self.specs.append(['discount', constant.DISCOUNT])
+        self.specs.append(['epsilon', constant.EPSILON])
+        self.specs.append(['mouse reward', constant.MOUSE])
+        self.specs.append(['wall penalty', constant.WALL])
+        self.specs.append(['self-collision penalty', constant.SNAKE])
+        self.specs.append(['empty tile penalty', constant.EMPTY])
+        self.write_data(specs_file, header, self.specs, True)
+
+    def write_data(self, filename: str, header: [str], data: [], add_specs: bool=False):
         """
-        Writes the data from the current training session to a file. training sessions 
+        Writes the data from the current training session to a file. training sessions
         also be appended to previous files. Function also creates directories for files 
-        if not found previously 
+        if not found previously
+        :param filename: filename to write data
+        :param header: header names for data
+        :param data: data to add to file
+        :param add_specs: True if writing specs file, False otherwise
         """
+        op = 'w'  # default write to CSV
         path = constant.DATA_DIR
-        header = ['Steps', 'Score']
-        param_header = ['Parameters', 'Values']
-        filename = path + 'eta' + str(constant.ETA) + '_data.csv'
-        param_filename = path + 'eta' + str(constant.ETA) + 'params' + '_data.csv'
-        collisions_filename = path + 'eta' + str(constant.ETA) + 'collisions' + '_data.csv'
+        file = path + filename
+
         # create directory if it doesn't exist
         if not os.path.exists(path):
             os.mkdir(path)
 
-        #collect parameters data
-        '''
-        sorry for having this all in the function. I tried to 
-        write another function to take care of it but it didn't
-        get recognized
-        '''
-        parameter_data = []
-        parameter_data.append(['tile size', constant.TILE])
-        parameter_data.append(['height', constant.HEIGHT]) 
-        parameter_data.append(['width', constant.WIDTH])
-        parameter_data.append(['learning rate', constant.ETA])
-        parameter_data.append(['discount', constant.DISCOUNT])
-        #parameter_data.append(['EPSILON, constant.EPSILON])
-        parameter_data.append(['mouse reward', constant.MOUSE])
-        parameter_data.append(['wall reward', constant.WALL])
-        parameter_data.append(['self-collision reward', constant.SNAKE])
-        parameter_data.append(['empty tile reward', constant.EMPTY])
-        parameter_data.append(['episode number', constant.EPISODES])
-        
-        #write parameters file
-        with open(param_filename, 'w', newline='') as param_outfile:
-            pw = csv.writer(param_outfile)
-            pw.writerow(param_header)
-            pw.writerows(parameter_data)
 
-        param_outfile.close()
+        # append data to existing file
+        if constant.RESUME and os.path.isfile(file):
+            op = 'a'
 
-        #write out collision stats
-        with open(collisions_filename, 'w', newline='') as collisions_outfile:
-            cw = csv.writer(collisions_outfile)
-            cw.writerow(['collisions type'])
-            cw.writerows(self.collision_stats)
-            
-        collisions_outfile.close()         
-        #check if data is to be appended to file and if file exists, appends to file
-        if ((constant.RESUME == True) and (os.path.isfile(filename)== True)):
-            with open(filename, 'a', newline='') as outfile:
-                w = csv.writer(outfile)
-                w.writerows(self.game_stats)
-        else:
-            # write data to csv file(s)
-            with open(filename, 'w', newline='') as outfile:
-                w = csv.writer(outfile)
+        # write specs
+        if add_specs:
+            op = 'w'
+
+        # write data to csv file(s)
+        with open(file, op, newline='') as outfile:
+            w = csv.writer(outfile)
+
+            if not constant.RESUME:
                 w.writerow(header)
-                w.writerows(self.game_stats)
 
+            w.writerows(data)
         outfile.close()
-        
-        #write collisions data file
-        
 
 
 def parse_args():
