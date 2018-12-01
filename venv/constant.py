@@ -5,14 +5,15 @@ EPISODES = 20000
 DELAY = 0
 
 # Hyperparameters
-ETA = 1
+ETA = 0.001
 DISCOUNT = 0.9
 EPSILON = 1
 
 # resume/save game settings
-RESUME = True
+RESUME = False
 RESUME_EPISODE = 1000
 SAVE_EPISODE = 1000000
+TRAINING = True
 
 # delete file settings
 DELETE_JSON = True

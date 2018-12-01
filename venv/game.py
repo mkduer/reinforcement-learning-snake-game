@@ -250,8 +250,11 @@ class Game:
 
     def prep_data(self):
         self.specs = []
-
-        stats_file = 'eta' + str(constant.ETA) + '_data.csv'
+        if(constant.TRAINING == True):
+            stats_file = 'training_eta' + str(constant.ETA) + '_data.csv'
+        else:
+            stats_file = 'testing_eta' + str(constant.ETA) + '_data.csv'
+        
         header = ['Steps', 'Score', 'Collisions']
         self.write_data(stats_file, header, self.game_stats)
 
