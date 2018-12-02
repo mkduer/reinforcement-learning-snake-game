@@ -4,11 +4,12 @@ import pandas as pd
 import os
 from shutil import rmtree
 import constant
+from numpy import arange as arr
 
 
 def plot_game_stats(filename: str, test_run: bool=False):
     """
-    Specifies specifc plots for various measurements/statistics from game
+    Specifies specific plots for various measurements/statistics from game
     :param filename: filename with data
     :param test_run: True if the data is from a test run, False otherwise
     """
@@ -24,7 +25,11 @@ def plot_game_stats(filename: str, test_run: bool=False):
             img = constant.PARAM + str(constant.PARAM_VAL) + '_' + s
             if test_run:
                 img += '_testing'
-            title += ' Run with ' + s + ' (' + constant.PARAM + ' = ' + str(constant.PARAM_VAL) + ')'
+            if constant.PARAM_TEST:
+                title += ' Run with ' + s + ' (' + constant.PARAM + ' = ' + str(constant.PARAM_VAL) + ')'
+            else:
+                # Manually Customized title
+                title += ' Run with ' + s + ' (Resumed from Episode ' + str(constant.PARAM_VAL) + ')'
 
             if s == 'Steps':
                 steps = df[s]
@@ -62,7 +67,7 @@ def line_plot(df, save_img: str, plot_title: str, x_label: str, y_label: str):
     sns.set(style='whitegrid', rc={"lines.linewidth": 0.3})
     sns.set_palette(sns.color_palette("RdBu_r", 5))
     ax = sns.lineplot(data=df, legend='full')
-    ax.set(xlabel=x_label, ylabel=y_label, title=plot_title, xlim=(0, len(df)), ylim=(0, max(df)))
+    ax.set(xlabel=x_label, ylabel=y_label, title=plot_title, xlim=(0, len(df) - 1), ylim=(0, max(df)))
     save_plot(title=save_img, clear_dir=constant.DELETE_GRAPHS)
     plt.show()
 
@@ -85,7 +90,7 @@ def save_plot(title: str, clear_dir: bool):
 
     # save plot to specified directory
     img = path + title + '.png'
-    plt.savefig(img)
+    plt.savefig(img, bbox_inches='tight', pad_inches=0.25)
 
 
 if __name__ == "__main__":
