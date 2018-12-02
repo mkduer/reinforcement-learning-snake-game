@@ -1,9 +1,9 @@
 from os import getcwd
 
 # command line default values
-EPISODES = 2
+EPISODES = 200000
 DELAY = 0
-TOTAL_TESTS = 3
+TOTAL_TESTS = 1000
 
 # hyperparameters
 ETA = 0.005
@@ -13,12 +13,12 @@ EPSILON = 0.1
 # specific test
 PARAM_TEST = False
 PARAM = 'from_episode'
-PARAM_VAL = 100000
+PARAM_VAL = 1000000
 
 # resume/save game settings
 RESUME = True
-RESUME_EPISODE = 100000
-SAVE_EPISODE = 100005
+RESUME_EPISODE = 1000000
+SAVE_EPISODE = 1001000
 
 # delete file settings
 DELETE_JSON = True

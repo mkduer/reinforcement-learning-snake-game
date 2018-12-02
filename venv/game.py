@@ -238,9 +238,6 @@ class Game:
             print(f'(TEST RUN EPISODE {str(self.episode)}) FINAL SCORE: {self.score}, FINAL MAX SCORE: {self.max_score}\n')
             self.episode += 1
 
-        print(f'EXITING FUNCTION')
-        return
-
     def resume_game(self, total_tests):
         filename = 'episode' + str(constant.RESUME_EPISODE) + '.json'
         self.episode = self.q.load_table(filename)
@@ -274,7 +271,6 @@ class Game:
         """
         Prepares data formatting with headers, specific test names, etc
         """
-        print(f'in prep_data()')
         self.specs = []
         filename = ''
 
@@ -331,6 +327,8 @@ class Game:
             w = csv.writer(outfile)
 
             if not constant.RESUME:
+                w.writerow(header)
+            if not constant.PARAM_TEST and constant.RESUME:
                 w.writerow(header)
 
             w.writerows(data)

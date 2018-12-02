@@ -9,13 +9,12 @@ from numpy import arange as arr
 
 def plot_game_stats(filename: str, test_run: bool=False):
     """
-    Specifies specifc plots for various measurements/statistics from game
+    Specifies specific plots for various measurements/statistics from game
     :param filename: filename with data
     :param test_run: True if the data is from a test run, False otherwise
     """
     df = pd.read_csv(filename, delimiter=',', header=0)
     specs = ['Steps', 'Scores']
-    print(f'df exists: {df}')
 
     for s in specs:
         title = 'Training'
@@ -26,7 +25,11 @@ def plot_game_stats(filename: str, test_run: bool=False):
             img = constant.PARAM + str(constant.PARAM_VAL) + '_' + s
             if test_run:
                 img += '_testing'
-            title += ' Run with ' + s + ' (' + constant.PARAM + ' = ' + str(constant.PARAM_VAL) + ')'
+            if constant.PARAM_TEST:
+                title += ' Run with ' + s + ' (' + constant.PARAM + ' = ' + str(constant.PARAM_VAL) + ')'
+            else:
+                # Manually Customized title
+                title += ' Run with ' + s + ' (Resumed from Episode ' + str(constant.PARAM_VAL) + ')'
 
             if s == 'Steps':
                 steps = df[s]
@@ -47,7 +50,7 @@ def scatterplot(df, save_img: str, plot_title: str, x_label: str, y_label: str):
     """
     sns.set(style='white')
     ax = sns.relplot(data=df, legend='full', size='size')
-    ax.set(xlabel=x_label, ylabel=y_label, title=plot_title, xticks=arr(0, constant.EPISODES + 1, 50000))
+    ax.set(xlabel=x_label, ylabel=y_label, title=plot_title)
     save_plot(title=save_img, clear_dir=constant.DELETE_GRAPHS)
     plt.show()
 
@@ -64,7 +67,7 @@ def line_plot(df, save_img: str, plot_title: str, x_label: str, y_label: str):
     sns.set(style='whitegrid', rc={"lines.linewidth": 0.3})
     sns.set_palette(sns.color_palette("RdBu_r", 5))
     ax = sns.lineplot(data=df, legend='full')
-    ax.set(xlabel=x_label, ylabel=y_label, title=plot_title, xlim=(0, len(df)), ylim=(0, max(df)))
+    ax.set(xlabel=x_label, ylabel=y_label, title=plot_title, xlim=(0, len(df) - 1), ylim=(0, max(df)))
     save_plot(title=save_img, clear_dir=constant.DELETE_GRAPHS)
     plt.show()
 
