@@ -4,6 +4,7 @@ import pandas as pd
 import os
 from shutil import rmtree
 import constant
+from numpy import arange as arr
 
 
 def plot_game_stats(filename: str, test_run: bool=False):
@@ -14,6 +15,7 @@ def plot_game_stats(filename: str, test_run: bool=False):
     """
     df = pd.read_csv(filename, delimiter=',', header=0)
     specs = ['Steps', 'Scores']
+    print(f'df exists: {df}')
 
     for s in specs:
         title = 'Training'
@@ -45,7 +47,7 @@ def scatterplot(df, save_img: str, plot_title: str, x_label: str, y_label: str):
     """
     sns.set(style='white')
     ax = sns.relplot(data=df, legend='full', size='size')
-    ax.set(xlabel=x_label, ylabel=y_label, title=plot_title)
+    ax.set(xlabel=x_label, ylabel=y_label, title=plot_title, xticks=arr(0, constant.EPISODES + 1, 50000))
     save_plot(title=save_img, clear_dir=constant.DELETE_GRAPHS)
     plt.show()
 
@@ -85,7 +87,7 @@ def save_plot(title: str, clear_dir: bool):
 
     # save plot to specified directory
     img = path + title + '.png'
-    plt.savefig(img)
+    plt.savefig(img, bbox_inches='tight', pad_inches=0.25)
 
 
 if __name__ == "__main__":

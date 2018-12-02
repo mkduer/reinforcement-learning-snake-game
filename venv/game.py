@@ -12,7 +12,7 @@ import constant
 
 class Game:
 
-    def __init__(self):
+    def __init__(self, total_episodes: int):
         self.window_width = constant.WIDTH * constant.TILE
         self.window_height = constant.HEIGHT * constant.TILE
 
@@ -22,6 +22,7 @@ class Game:
         self._mouse = None
 
         self.episode = 1
+        self.total_episodes = total_episodes
         self.score = 0
         self.max_score = 0
         self.frames = 0
@@ -44,7 +45,7 @@ class Game:
         # source for mouse: http://pixelartmaker.com/art/3d272b1bf180b60.png
         self._mouse = pygame.image.load("img/mouse_mini.png").convert()
 
-    def game_over(self, collision_type: str, total_episodes: int):
+    def game_over(self, collision_type: str):
         """
         Print game results and exit the game
         """
@@ -59,7 +60,7 @@ class Game:
             self.max_score = self.score
         self.game_stats.append([self.frames, self.score, collision_value])
         self.display(collision_type)
-        self.next_episode(total_episodes)
+        self.next_episode()
 
     def display(self, collision_type: str):
         """
@@ -72,9 +73,10 @@ class Game:
         print(f'GAME OVER! Snake collided with {collision_type}')
         print(f'SCORE: {self.score}')
 
-    def move_snake(self, ai_play: bool, total_episodes: int):
+    def move_snake(self, ai_play: bool):
         """
         Check whether the snake has eaten the mouse or encountered a collision
+        :param ai_play: True if ai play, False otherwise
         """
         self.snake.update_head()
 
@@ -89,13 +91,13 @@ class Game:
         elif self.snake.body_collision():
             if ai_play:
                 self.q.update_reward('snake')
-            self.game_over('itself', total_episodes)
+            self.game_over('itself')
 
         # if snake collides with walls
         elif self.snake.wall_collision(0, self.window_width, 0, self.window_height):
             if ai_play:
                 self.q.update_reward('wall')
-            self.game_over('the wall', total_episodes)
+            self.game_over('the wall')
 
         else:
             if ai_play:
@@ -117,13 +119,12 @@ class Game:
         self.mouse.draw(self._display, self._mouse)
         pygame.display.flip()
 
-    def human_play(self, delay: int, total_episodes: int):
+    def human_play(self, delay: int):
         """
         Executes the game play, snake movements, and loops until the game ends.
         Keys can be used to play the game.
         :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
         (e.g. 1000) result in very slow frames
-        :param total_episodes: total number of episodes to run the game
         """
 
         while self._running:
@@ -141,7 +142,7 @@ class Game:
             elif keys[pygame.K_ESCAPE]:
                 self._running = False
 
-            self.move_snake(False, total_episodes)
+            self.move_snake(False)
             self.render()
             sleep(float(delay) / 1000)
             self.frames += 1
@@ -160,24 +161,19 @@ class Game:
         else:        # south
             self.snake.set_south()
 
-    def ai_train(self, delay: int, total_episodes: int, resume_state: bool):
+    def ai_train(self, delay: int, resume_state: bool):
         """
         Executes the AI training, looping until the snake is trained the total number of episodes.
         Movements are implemented by the AI rather than by a human pressing keys.
         :param delay: defines the frame delay with lower values (e.g. 1) resulting in a fast frame, while higher values
         (e.g. 1000) result in very slow frames
-        :param total_episodes: total number of episodes to run the game
         :param resume_state: if True, start training from externally saved table's next episode, if False,
         initial episode is 1
         """
 
         # If resuming from a saved state, start from the loaded state's next episode
         if resume_state:
-            filename = 'episode' + str(constant.RESUME_EPISODE) + '.json'
-            self.episode = self.q.load_table(filename)
-            total_episodes += self.episode
-            if self.episode < 1:
-                print(f'Table failed to load')  # TODO turn this into an exception
+            self.resume_game(self.total_episodes)
 
         while self._running:
             pygame.event.pump()
@@ -188,7 +184,7 @@ class Game:
             action = self.q.select_action(state)
 
             self.set_direction(action)
-            self.move_snake(True, total_episodes)
+            self.move_snake(True)
 
             tail_loc, mouse_loc = self.abs_coordinates()
             snake_direction = self.snake.current_direction()
@@ -201,34 +197,56 @@ class Game:
             sleep(float(delay) / 1000)
             self.frames += 1
 
-    def ai_test(self, delay: int):
+    def ai_test(self, delay: int, resume_state: bool):
         """
         Tests the AI on previous training data
         :param delay: defines the frame delay
+        :param resume_state: if True, start training from externally saved table's next episode, if False,
+        initial episode is 1
         """
         self.test_run = True
-        caption = 'SNAKE ' + 'FINAL TEST RUN'
-        self.reset_game(caption)
         self.episode = 1
-        self.game_stats = []
-        self.specs = []
 
-        while self._running:
-            pygame.event.pump()
+        # If resuming from a saved state, start from the loaded state's next episode
+        if resume_state:
+            self.resume_game(constant.TOTAL_TESTS)
 
-            tail_loc, mouse_loc = self.abs_coordinates()
-            snake_direction = self.snake.current_direction()
-            state = self.q.define_state(tail_loc, mouse_loc, snake_direction)
-            action = self.q.select_action(state)
+        if constant.PARAM_TEST:
+            self.total_episodes = constant.TOTAL_TESTS
 
-            self.set_direction(action)
-            self.move_snake(True, 1)
-            self.render()
+        # Run the total number of tests specified
+        while self.episode <= self.total_episodes:
+            caption = 'SNAKE ' + 'FINAL TEST RUN: EPISODE ' + str(self.episode)
+            self.reset_game(caption)
+            self.game_stats = []
+            self.specs = []
 
-            sleep(float(delay) / 1000)
-            self.frames += 1
+            while self._running:
+                pygame.event.pump()
 
-        print(f'(TEST RUN) FINAL SCORE: {self.score}, FINAL MAX SCORE: {self.max_score}')
+                tail_loc, mouse_loc = self.abs_coordinates()
+                snake_direction = self.snake.current_direction()
+                state = self.q.define_state(tail_loc, mouse_loc, snake_direction)
+                action = self.q.select_action(state)
+
+                self.set_direction(action)
+                self.move_snake(True)
+                self.render()
+
+                sleep(float(delay) / 1000)
+                self.frames += 1
+            print(f'(TEST RUN EPISODE {str(self.episode)}) FINAL SCORE: {self.score}, FINAL MAX SCORE: {self.max_score}\n')
+            self.episode += 1
+
+        print(f'EXITING FUNCTION')
+        return
+
+    def resume_game(self, total_tests):
+        filename = 'episode' + str(constant.RESUME_EPISODE) + '.json'
+        self.episode = self.q.load_table(filename)
+        if self.episode < 1:
+            print(f'Table failed to load')
+        self.total_episodes = self.episode + total_tests - 1
 
     def reset_game(self, caption: str):
         pygame.display.set_caption(caption)
@@ -238,12 +256,11 @@ class Game:
         self.snake.initialize_positions(self.mouse.x, self.mouse.y)
         self.mouse.generate_mouse(self.snake.body_position())
 
-    def next_episode(self, total_episodes: int):
+    def next_episode(self):
         """
         Sets-up the next episode or completes the final episode
-        :param total_episodes: total number of episodes
         """
-        if self.episode >= total_episodes:
+        if self.episode >= self.total_episodes:
             self.prep_data()
             return
 
@@ -257,11 +274,12 @@ class Game:
         """
         Prepares data formatting with headers, specific test names, etc
         """
+        print(f'in prep_data()')
         self.specs = []
         filename = ''
 
         if self.test_run:
-            filename = 'testing_'
+            filename = 'testing_' + constant.PARAM + str(constant.PARAM_VAL)
 
         if constant.PARAM_TEST:
             filename += constant.PARAM + str(constant.PARAM_VAL)
@@ -348,15 +366,21 @@ if __name__ == "__main__":
     delayed, ai, total_episode_number = parse_args()
 
     # initialize
-    game = Game()
+    game = Game(total_episode_number)
     game.initialize_pygame()
 
-    # select game play
+    # AI play
     if ai == 'y':
-        game.ai_train(delayed, total_episode_number, constant.RESUME)
-        print(f'\nTEST RUN:')
-        game.ai_test(delayed)
+        if constant.PARAM_TEST:
+            print(f'\nTRAINING RUNS:')
+            game.ai_train(delayed, constant.RESUME)
+            print(f'\nTEST RUN:')
+            game.ai_test(delayed, False)
+        else:
+            print(f'\nTEST RUNS:')
+            game.ai_test(delayed, constant.RESUME)
+    # human play
     else:
-        game.human_play(delayed, total_episode_number)
+        game.human_play(delayed)
 
     pygame.quit()
