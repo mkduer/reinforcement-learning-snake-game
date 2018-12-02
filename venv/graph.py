@@ -6,31 +6,33 @@ from shutil import rmtree
 import constant
 
 
-def plot_game_stats(filename: str):
+def plot_game_stats(filename: str, test_run: bool=False):
     """
     Specifies specifc plots for various measurements/statistics from game
     :param filename: filename with data
+    :param True if the data is from a test run, False otherwise
     """
     df = pd.read_csv(filename, delimiter=',', header=0)
+    specs = ['Steps', 'Scores']
+    img = ''
 
-    if 'Steps' in df:
-        steps = df['Steps']
-        img = 'eta' + str(constant.ETA) + '_steps'
-        title = 'Training Steps for η = ' + str(constant.ETA)
-        line_plot(steps, save_img=img, plot_title=title, x_label='Episodes', y_label='Steps')
+    for s in specs:
+        title = 'Training'
+        if test_run:
+            title = 'Testing'
 
-    if 'Score' in df:
-        score = df['Score']
-        img = 'eta' + str(constant.ETA) + '_score'
-        title = 'Training Scores for η = ' + str(constant.ETA)
-        scatterplot(score, save_img=img, plot_title=title, x_label='Episodes', y_label='Scores')
+        if s in df:
+            img = constant.PARAM + str(constant.PARAM_VAL) + '_' + s
+            if test_run:
+                img += '_testing'
+            title += ' Run with ' + s + ' (' + constant.PARAM + ' = ' + str(constant.PARAM_VAL) + ')'
 
-    # TODO: pick an appropriate graph to visualize collisions
-    if 'Collisions' in df:
-        collisions = df['Collisions']
-        img = 'eta' + str(constant.ETA) + '_collisions'
-        title = 'Training Collisions for η = ' + str(constant.ETA)
-        scatterplot(collisions, save_img=img, plot_title=title, x_label='Episodes', y_label='Collisions')
+            if s == 'Steps':
+                steps = df[s]
+                line_plot(steps, img, title, x_label='Episodes', y_label=s)
+            if s == 'Scores':
+                score = df[s]
+                scatterplot(score, img, title, x_label='Episodes', y_label=s)
 
 
 def scatterplot(df, save_img: str, plot_title: str, x_label: str, y_label: str):
@@ -87,5 +89,12 @@ def save_plot(title: str, clear_dir: bool):
 
 
 if __name__ == "__main__":
-    game_stats_file = constant.DATA_DIR + 'eta' + str(constant.ETA) + '_data.csv'
-    plot_game_stats(game_stats_file)
+
+    if constant.PARAM_TEST:
+        test_name = constant.PARAM + str(constant.PARAM_VAL)
+        game_stats_file = constant.DATA_DIR + test_name + '_data.csv'
+        plot_game_stats(game_stats_file)
+    else:
+        test_name = 'testing_' + constant.PARAM + str(constant.PARAM_VAL)
+        game_stats_file = constant.DATA_DIR + test_name + '_data.csv'
+        plot_game_stats(game_stats_file, True)

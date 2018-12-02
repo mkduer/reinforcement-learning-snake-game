@@ -2,12 +2,15 @@ from os import getcwd
 
 # command line default values
 EPISODES = 10
-DELAY = 100
+DELAY = 0
 
 # Hyperparameters
-ETA = 1
+PARAM_TEST = True
+PARAM = 'Epsilon'
+PARAM_VAL = 0.1
+ETA = 0.001
 DISCOUNT = 0.9
-EPSILON = .5
+EPSILON = 0.1
 
 # resume/save game settings
 RESUME = False

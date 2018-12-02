@@ -27,6 +27,7 @@ class Game:
         self.frames = 0
         self.game_stats = []
         self.specs = []
+        self.test_run = False
 
         self.snake = Snake()
         self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
@@ -205,8 +206,12 @@ class Game:
         Tests the AI on previous training data
         :param delay: defines the frame delay
         """
+        self.test_run = True
         caption = 'SNAKE ' + 'FINAL TEST RUN'
         self.reset_game(caption)
+        self.episode = 1
+        self.game_stats = []
+        self.specs = []
 
         while self._running:
             pygame.event.pump()
@@ -249,15 +254,25 @@ class Game:
         self.reset_game(caption)
 
     def prep_data(self):
+        """
+        Prepares data formatting with headers, specific test names, etc
+        """
         self.specs = []
+        filename = ''
 
-        stats_file = 'eta' + str(constant.ETA) + '_data.csv'
-        header = ['Steps', 'Score', 'Collisions']
+        if self.test_run:
+            filename = 'testing_'
+
+        if constant.PARAM_TEST:
+            filename += constant.PARAM + str(constant.PARAM_VAL)
+
+        stats_file = filename + '_data.csv'
+        header = ['Steps', 'Scores', 'Collisions']
         self.write_data(stats_file, header, self.game_stats)
 
-        specs_file = 'eta' + str(constant.ETA) + '_specs.csv'
+        specs_file = filename + '_specs.csv'
         header = ['Parameters', 'Values']
-        self.specs.append(['episode number', constant.EPISODES])
+        self.specs.append(['total episodes', self.episode])
         self.specs.append(['height', constant.HEIGHT])
         self.specs.append(['width', constant.WIDTH])
         self.specs.append(['learning rate', constant.ETA])
@@ -271,9 +286,7 @@ class Game:
 
     def write_data(self, filename: str, header: [str], data: [], add_specs: bool=False):
         """
-        Writes the data from the current training session to a file. training sessions
-        also be appended to previous files. Function also creates directories for files 
-        if not found previously
+        Writes the data from the current session to a file.
         :param filename: filename to write data
         :param header: header names for data
         :param data: data to add to file
