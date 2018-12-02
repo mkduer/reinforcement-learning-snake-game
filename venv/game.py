@@ -32,6 +32,7 @@ class Game:
         self.mouse = Mouse(constant.WIDTH, constant.HEIGHT, self.snake.body_position())
         self.q = QLearning()
 
+
     def initialize_pygame(self):
         """
         Initialize pygame along with display and image settings
@@ -222,7 +223,10 @@ class Game:
 
             sleep(float(delay) / 1000)
             self.frames += 1
-
+        test_results = [[self.frames,self.score,self.max_score]]
+        header = ["Frames","score","Max score"]
+        test_stats_file = 'testing_eta' + str(constant.ETA) + '_data.csv'
+        self.write_data(test_stats_file, header, test_results)
         print(f'(TEST RUN) FINAL SCORE: {self.score}, FINAL MAX SCORE: {self.max_score}')
 
     def reset_game(self, caption: str):
@@ -250,13 +254,11 @@ class Game:
 
     def prep_data(self):
         self.specs = []
-        if(constant.TRAINING == True):
-            stats_file = 'training_eta' + str(constant.ETA) + '_data.csv'
-        else:
-            stats_file = 'testing_eta' + str(constant.ETA) + '_data.csv'
-        
+
+        training_stats_file = 'training_eta' + str(constant.ETA) + '_data.csv'
         header = ['Steps', 'Score', 'Collisions']
-        self.write_data(stats_file, header, self.game_stats)
+        self.write_data(training_stats_file, header, self.game_stats)
+
 
         specs_file = 'eta' + str(constant.ETA) + '_specs.csv'
         header = ['Parameters', 'Values']
