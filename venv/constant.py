@@ -1,7 +1,7 @@
 from os import getcwd
 
 # command line default values
-EPISODES = 10
+EPISODES = 20000
 DELAY = 0
 
 # Hyperparameters
@@ -20,7 +20,6 @@ SAVE_EPISODE = 1000000
 # delete file settings
 DELETE_JSON = True
 DELETE_GRAPHS = False
-
 
 # external directories
 JSON_DIR = str(getcwd()) + '/json/'

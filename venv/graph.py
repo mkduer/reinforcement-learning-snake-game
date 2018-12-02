@@ -10,11 +10,10 @@ def plot_game_stats(filename: str, test_run: bool=False):
     """
     Specifies specifc plots for various measurements/statistics from game
     :param filename: filename with data
-    :param True if the data is from a test run, False otherwise
+    :param test_run: True if the data is from a test run, False otherwise
     """
     df = pd.read_csv(filename, delimiter=',', header=0)
     specs = ['Steps', 'Scores']
-    img = ''
 
     for s in specs:
         title = 'Training'
@@ -71,6 +70,7 @@ def line_plot(df, save_img: str, plot_title: str, x_label: str, y_label: str):
 def save_plot(title: str, clear_dir: bool):
     """
     Saves plot to specified directory.
+    :param title: title of plot
     :param clear_dir: if True, the directory and its contents will be removed, if False, nothing is explicitly removed
     """
     path = constant.GRAPH_DIR
