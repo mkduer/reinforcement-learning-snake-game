@@ -1,24 +1,30 @@
 from os import getcwd
 
 # command line default values
-EPISODES = 200000
+EPISODES = 1000000
 DELAY = 0
-TOTAL_TESTS = 1000
+TOTAL_TESTS = 1
 
 # hyperparameters
 ETA = 0.005
 DISCOUNT = 0.9
 EPSILON = 0.1
 
+# rewards
+MOUSE = 100
+WALL = -100
+SNAKE = -100
+EMPTY = -10
+
 # specific test
-PARAM_TEST = False
-PARAM = 'from_episode'
-PARAM_VAL = 1000000
+PARAM_TEST = True
+PARAM = 'learning_rate'
+PARAM_VAL = 0.5
 
 # resume/save game settings
-RESUME = True
+RESUME = False
 RESUME_EPISODE = 1000000
-SAVE_EPISODE = 1001000
+SAVE_EPISODE = 100000
 
 # delete file settings
 DELETE_JSON = True
@@ -41,9 +47,3 @@ EAST = (1, 0)
 WEST = (-1, 0)
 NORTH = (0, -1)
 SOUTH = (0, 1)
-
-# rewards
-MOUSE = 100
-WALL = -100
-SNAKE = -100
-EMPTY = -10
