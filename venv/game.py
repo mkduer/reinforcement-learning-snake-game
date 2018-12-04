@@ -68,7 +68,6 @@ class Game:
         :param collision_type: what type of collision ended the game
         """
         if self.episode % constant.SAVE_EPISODE == 0:
-            #self.q.display_table()  # optional TODO: delete at the end of the project
             self.q.save_table(self.episode, clear_dir=constant.DELETE_JSON)
         print(f'GAME OVER! Snake collided with {collision_type}')
         print(f'SCORE: {self.score}')
